@@ -45,6 +45,7 @@
     <Compile Include="Playlist\Delete.cs" />
     <Compile Include="Playlist\Detail.cs" />
     <Compile Include="Playlist\Edit.cs" />
+    <Compile Include="Playlist\Index.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
