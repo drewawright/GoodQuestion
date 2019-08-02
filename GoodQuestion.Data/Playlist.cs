@@ -9,7 +9,7 @@ namespace GoodQuestion.Data
 {
     public class Playlist
     {
-        public Guid OwnerId { get; set; }
+        public string OwnerId { get; set; }
         public int PlaylistId { get; set; }
         public string PlaylistName { get; set; }
         public string TracksUrl { get; set; }
