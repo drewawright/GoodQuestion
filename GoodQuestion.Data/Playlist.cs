@@ -13,7 +13,7 @@ namespace GoodQuestion.Data
         public int PlaylistId { get; set; }
         public string PlaylistName { get; set; }
         public string TracksUrl { get; set; }
-        public ICollection<Song> Song { get; set; }
+        public virtual ICollection<Song> Songs { get; set; }
         public string ImageUrl { get; set; }
         public bool HasSongs { get; set; }
         public float Danceability { get; set; }
