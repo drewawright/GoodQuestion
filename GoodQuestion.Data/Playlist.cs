@@ -13,7 +13,6 @@ namespace GoodQuestion.Data
         public int PlaylistId { get; set; }
         public string PlaylistName { get; set; }
         public string TracksUrl { get; set; }
-        public virtual ICollection<Song> Songs { get; set; }
         public string ImageUrl { get; set; }
         public bool HasSongs { get; set; }
         public float Danceability { get; set; }
@@ -29,5 +28,6 @@ namespace GoodQuestion.Data
         public float Tempo { get; set; }
         public int Duration_ms { get; set; }
         public DateTime LastRefreshed { get; set; }
+        public virtual ICollection<Song> Songs { get; set; }
     }
 }
