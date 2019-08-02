@@ -24,8 +24,6 @@ namespace GoodQuestion.Data
 
         public bool HasAudioFeatures { get; set; }
 
-        //public virtual ICollection<Playlist> Playlists { get; set; }
-
         public DateTime LastRefreshed { get; set; }
 
         public float Danceability { get; set; }
@@ -49,6 +47,8 @@ namespace GoodQuestion.Data
         public float Valence { get; set; }
 
         public float Tempo { get; set; }
+
+        //public virtual ICollection<Playlist> Playlists { get; set; }
 
     }
 }
