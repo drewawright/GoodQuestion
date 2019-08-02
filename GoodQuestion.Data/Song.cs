@@ -48,7 +48,7 @@ namespace GoodQuestion.Data
 
         public float Tempo { get; set; }
 
-        //public virtual ICollection<Playlist> Playlists { get; set; }
+        public virtual ICollection<Playlist> Playlists { get; set; }
 
     }
 }
