@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GoodQuestion.Data
+namespace GoodQuestion.Models
 {
-    public class Song
+    public class SongCreate
     {
         public string Name { get; set; }
 
@@ -47,8 +47,6 @@ namespace GoodQuestion.Data
         public float Valence { get; set; }
 
         public float Tempo { get; set; }
-
-        public virtual ICollection<Playlist> Playlists { get; set; }
 
     }
 }
