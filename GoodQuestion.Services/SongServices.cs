@@ -42,7 +42,7 @@ namespace GoodQuestion.Services
                 }
             }
         }
-        
+
         public bool CheckIfSongHasPlaylists(string songId)
         {
             using (var ctx = new ApplicationDbContext())
@@ -68,7 +68,8 @@ namespace GoodQuestion.Services
                     .Songs
                     .Single(s => s.SongId == songId);
 
-                var songDetail = new SongDetail {
+                var songDetail = new SongDetail
+                {
                     Name = query.Name,
                     SongId = query.SongId,
                     Artists = query.Artists,
@@ -88,9 +89,9 @@ namespace GoodQuestion.Services
                     Liveness = query.Liveness,
                     Valence = query.Valence,
                     Tempo = query.Tempo
-                    };
+                };
                 return songDetail;
-                    
+
             }
         }
 
@@ -118,7 +119,7 @@ namespace GoodQuestion.Services
 
                 List<SongIndex> songIndex = new List<SongIndex>();
 
-                foreach(var song in query.Songs)
+                foreach (var song in query.Songs)
                 {
                     var songItem = new SongIndex
                     {
