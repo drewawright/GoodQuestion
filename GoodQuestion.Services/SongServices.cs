@@ -41,6 +41,23 @@ namespace GoodQuestion.Services
                 }
             }
         }
+        
+        public bool CheckIfSongHasPlaylists(string songId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var query = ctx
+                    .Songs
+                    .Where(s => s.SongId == songId)
+                    .Single();
+
+                if (query.Playlists.Count != 0)
+                {
+                    return true;
+                }
+                else return false;
+            };
+        }
 
         public SongDetail GetSongDetail(string songId)
         {
