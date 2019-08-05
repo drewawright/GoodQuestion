@@ -8,5 +8,7 @@ namespace GoodQuestion.Models.Playlist
 {
     public class Delete
     {
+        public int PlaylistId { get; set; }
+        public string PlaylistName { get; set; }
     }
 }
