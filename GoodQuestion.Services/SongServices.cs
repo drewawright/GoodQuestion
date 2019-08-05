@@ -42,9 +42,34 @@ namespace GoodQuestion.Services
             }
         }
 
-        public List<SongIndex> GetSongIndexDb()
+        public List<SongIndex> GetSongIndexDb(string playlistId)
         {
-            return null;
+            using (var ctx = new ApplicationDbContext())
+            {
+                var query = ctx
+                    .Playlists
+                    .Where(p => p.PlaylistId == playlistId)
+                    .Single();
+
+                List<SongIndex> songIndex = new List<SongIndex>();
+
+                foreach(var song in query.Songs)
+                {
+                    var songItem = new SongIndex
+                    {
+                        Name = song.Name,
+                        SongId = song.SongId,
+                        Artists = song.Artists,
+                        ImageUrl = song.ImageUrl,
+                        PlayerUrl = song.PlayerUrl,
+                        DurationMs = song.DurationMs,
+                        LastRefreshed = song.LastRefreshed,
+                    };
+                    songIndex.Add(songItem);
+                }
+
+                return songIndex;
+            };
         }
     }
 }
