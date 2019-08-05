@@ -8,6 +8,7 @@ using GoodQuestion.Models.Song;
 using GoodQuestion.WebAPI.Models;
 using SpotifyAPI.Web;
 using SpotifyAPI.Web.Auth;
+using SpotifyAPI.Web.Models;
 
 namespace GoodQuestion.Services
 {
@@ -41,7 +42,7 @@ namespace GoodQuestion.Services
                 }
             }
         }
-        
+
         public bool CheckIfSongHasPlaylists(string songId)
         {
             using (var ctx = new ApplicationDbContext())
@@ -67,7 +68,8 @@ namespace GoodQuestion.Services
                     .Songs
                     .Single(s => s.SongId == songId);
 
-                var songDetail = new SongDetail {
+                var songDetail = new SongDetail
+                {
                     Name = query.Name,
                     SongId = query.SongId,
                     Artists = query.Artists,
@@ -87,9 +89,9 @@ namespace GoodQuestion.Services
                     Liveness = query.Liveness,
                     Valence = query.Valence,
                     Tempo = query.Tempo
-                    };
+                };
                 return songDetail;
-                    
+
             }
         }
 
@@ -117,7 +119,7 @@ namespace GoodQuestion.Services
 
                 List<SongIndex> songIndex = new List<SongIndex>();
 
-                foreach(var song in query.Songs)
+                foreach (var song in query.Songs)
                 {
                     var songItem = new SongIndex
                     {
@@ -134,6 +136,89 @@ namespace GoodQuestion.Services
 
                 return songIndex;
             };
+        }
+
+        private void GetSongAudioFeatures(Song song)
+        {
+            AudioFeatures features = _api.GetAudioFeatures(song.SongId);
+
+            song.DurationMs = features.DurationMs;
+            song.Danceability = features.Danceability;
+            song.Energy = features.Energy;
+            song.Key = features.Key;
+            song.Loudness = features.Loudness;
+            song.Mode = features.Mode;
+            song.Speechiness = features.Speechiness;
+            song.Acousticness = features.Acousticness;
+            song.Instrumentalness = features.Instrumentalness;
+            song.Liveness = features.Liveness;
+            song.Valence = features.Valence;
+            song.Tempo = features.Tempo;
+            song.HasAudioFeatures = true;
+        }
+
+        public bool GetSongsInPlaylist(string playlistId)
+        {
+            List<Song> songs = new List<Song>();
+
+            var tracks = _api.GetPlaylistTracks(playlistId);
+
+            var count = tracks.Items.Count();
+
+            if (count > 100)
+            {
+                var loops = count / 100;
+
+                if (count % 100 != 0)
+                {
+                    loops++;
+                }
+
+                for (int i = 1; i < loops; i++)
+                {
+                    var offset = i * 100;
+
+                    var additionalTracks = _api.GetPlaylistTracks(playlistId, null, 100, offset, null);
+
+                    foreach (var track in additionalTracks.Items)
+                    {
+                        tracks.Items.Add(track);
+                    }
+                }
+            }
+
+            foreach (var track in tracks.Items)
+            {
+                Song song = new Song
+                {
+                    Name = track.Track.Name,
+                    SongId = track.Track.Id,
+                    Artists = track.Track.Artists.ToString(),
+                    ImageUrl = track.Track.Album.Images[0].Url,
+                    PlayerUrl = track.Track.ExternUrls["spotify"],
+                    LastRefreshed = DateTime.Now,
+
+                };
+
+                songs.Add(song);
+            }
+
+            foreach (var track in songs)
+            {
+                GetSongAudioFeatures(track);
+            }
+
+            var changeCount = 0;
+
+            using (var db = new ApplicationDbContext())
+            {
+                foreach (Song song in songs)
+                {
+                    db.Songs.Add(song);
+                    changeCount++;
+                }
+                return db.SaveChanges() == changeCount;
+            }
         }
     }
 }

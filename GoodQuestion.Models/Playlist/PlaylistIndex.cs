@@ -8,7 +8,7 @@ namespace GoodQuestion.Models.Playlist
 {
     public class PlaylistIndex
     {
-        public int PlaylistId { get; set; }
+        public string PlaylistId { get; set; }
         public string PlaylistName { get; set; }
         public string ImageUrl { get; set; }
         public string OwnerId { get; set; }
