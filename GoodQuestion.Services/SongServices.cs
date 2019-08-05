@@ -21,10 +21,120 @@ namespace GoodQuestion.Services
         };
         private string _accountId = "38vdur0tacvhr9wud418mvzqh";
 
-
-        public List<SongIndex> GetSongIndexDb()
+        public bool CheckIfSongExists(string songId)
         {
-            return null;
+            using (var ctx = new ApplicationDbContext())
+            {
+                try
+                {
+                    var query = ctx
+                    .Songs
+                    .Single(e => e.SongId == songId);
+                    return true;
+                }
+                catch (InvalidOperationException)
+                {
+                    return false;
+                }
+                catch (ArgumentNullException)
+                {
+                    return false;
+                }
+            }
+        }
+        
+        public bool CheckIfSongHasPlaylists(string songId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var query = ctx
+                    .Songs
+                    .Where(s => s.SongId == songId)
+                    .Single();
+
+                if (query.Playlists.Count != 0)
+                {
+                    return true;
+                }
+                else return false;
+            };
+        }
+
+        public SongDetail GetSongDetail(string songId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var query = ctx
+                    .Songs
+                    .Single(s => s.SongId == songId);
+
+                var songDetail = new SongDetail {
+                    Name = query.Name,
+                    SongId = query.SongId,
+                    Artists = query.Artists,
+                    ImageUrl = query.ImageUrl,
+                    PlayerUrl = query.PlayerUrl,
+                    DurationMs = query.DurationMs,
+                    HasAudioFeatures = query.HasAudioFeatures,
+                    LastRefreshed = query.LastRefreshed,
+                    Danceability = query.Danceability,
+                    Energy = query.Energy,
+                    Key = query.Key,
+                    Loudness = query.Loudness,
+                    Mode = query.Mode,
+                    Speechiness = query.Speechiness,
+                    Acousticness = query.Acousticness,
+                    Instrumentalness = query.Instrumentalness,
+                    Liveness = query.Liveness,
+                    Valence = query.Valence,
+                    Tempo = query.Tempo
+                    };
+                return songDetail;
+                    
+            }
+        }
+
+        public bool DeleteSongDb(string songId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity = ctx
+                    .Songs
+                    .Single(e => e.SongId == songId);
+                ctx.Songs.Remove(entity);
+
+                return ctx.SaveChanges() == 1;
+            }
+        }
+
+        public List<SongIndex> GetSongIndexDb(string playlistId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var query = ctx
+                    .Playlists
+                    .Where(p => p.PlaylistId == playlistId)
+                    .Single();
+
+                List<SongIndex> songIndex = new List<SongIndex>();
+
+                foreach(var song in query.Songs)
+                {
+                    var songItem = new SongIndex
+                    {
+                        Name = song.Name,
+                        SongId = song.SongId,
+                        Artists = song.Artists,
+                        ImageUrl = song.ImageUrl,
+                        PlayerUrl = song.PlayerUrl,
+                        DurationMs = song.DurationMs,
+                        LastRefreshed = song.LastRefreshed,
+                    };
+                    songIndex.Add(songItem);
+                }
+
+                return songIndex;
+            };
         }
 
         private void GetSongAudioFeatures(Song song)
