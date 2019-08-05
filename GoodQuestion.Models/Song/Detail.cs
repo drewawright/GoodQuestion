@@ -10,15 +10,13 @@ namespace GoodQuestion.Models.Song
     {
         public string Name { get; set; }
 
-        public string Id { get; set; }
+        public string SongId { get; set; }
 
         public string Artists { get; set; }
 
         public string ImageUrl { get; set; }
 
         public string PlayerUrl { get; set; }
-
-        public string Href { get; set; }
 
         public int DurationMs { get; set; }
 
