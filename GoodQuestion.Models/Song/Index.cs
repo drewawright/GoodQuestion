@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GoodQuestion.Models.Song
 {
-    public class SongIndex
+    public class Index
     {
         public string Name { get; set; }
 
