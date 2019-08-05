@@ -47,9 +47,25 @@ namespace GoodQuestion.WebAPI
             // Enable the application to use bearer tokens to authenticate users
             app.UseOAuthBearerTokens(OAuthOptions);
 
-            app.UseSpotifyAuthentication(
-                clientId: "e9c39d5ff5104708b844be98e1ef108c",
-                clientSecret: "5bc1dc56fdc04a7d986861511f0abdaf");
+
+            var options = new SpotifyAuthenticationOptions()
+            {
+                ClientId = "e9c39d5ff5104708b844be98e1ef108c",
+                ClientSecret = "5bc1dc56fdc04a7d986861511f0abdaf"
+            };
+
+            var permissions = new List<string>
+            {
+                "user-read-recently-played", "user-top-read", "playlist-read-collaborative", "playlist-modify-private", "playlist-modify-public", "playlist-read-private", "streaming"
+            };
+
+            foreach (var permission in permissions)
+            {
+                options.Scope.Add(permission);
+            }
+
+
+            app.UseSpotifyAuthentication(options);
 
             // Uncomment the following lines to enable logging in with third party login providers
             //app.UseMicrosoftAccountAuthentication(
