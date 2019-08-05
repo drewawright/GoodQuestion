@@ -10,6 +10,7 @@ using Microsoft.Owin.Security.OAuth;
 using Owin;
 using GoodQuestion.WebAPI.Providers;
 using GoodQuestion.WebAPI.Models;
+using Owin.Security.Providers.Spotify;
 
 namespace GoodQuestion.WebAPI
 {
@@ -45,6 +46,10 @@ namespace GoodQuestion.WebAPI
 
             // Enable the application to use bearer tokens to authenticate users
             app.UseOAuthBearerTokens(OAuthOptions);
+
+            app.UseSpotifyAuthentication(
+                clientId: "e9c39d5ff5104708b844be98e1ef108c",
+                clientSecret: "5bc1dc56fdc04a7d986861511f0abdaf");
 
             // Uncomment the following lines to enable logging in with third party login providers
             //app.UseMicrosoftAccountAuthentication(
