@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GoodQuestion.Data;
 using GoodQuestion.Models.Song;
+using GoodQuestion.WebAPI.Models;
 using SpotifyAPI.Web;
 using SpotifyAPI.Web.Auth;
 
@@ -19,6 +20,27 @@ namespace GoodQuestion.Services
         };
         private string _accountId = "38vdur0tacvhr9wud418mvzqh";
 
+        public bool CheckIfSongExists(string songId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                try
+                {
+                    var entity = ctx
+                    .Songs
+                    .Single(e => e.Name.ToLower() == name.ToLower());
+                    return entity.CardApiId;
+                }
+                catch (InvalidOperationException)
+                {
+                    return 0;
+                }
+                catch (ArgumentNullException)
+                {
+                    return 0;
+                }
+            }
+        }
 
         public List<SongIndex> GetSongIndexDb()
         {
