@@ -76,6 +76,19 @@ namespace GoodQuestion.Services
             }
         }
 
+        public bool DeleteSongDb(string songId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity = ctx
+                    .Songs
+                    .Single(e => e.SongId == songId);
+                ctx.Songs.Remove(entity);
+
+                return ctx.SaveChanges() == 1;
+            }
+        }
+
         public List<SongIndex> GetSongIndexDb(string playlistId)
         {
             using (var ctx = new ApplicationDbContext())
