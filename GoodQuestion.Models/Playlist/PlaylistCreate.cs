@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GoodQuestion.Models.Playlist
 {
-    public class Create
+    public class PlaylistCreate
     {
         public string OwnerId { get; set; }
         public int PlaylistId { get; set; }
@@ -28,6 +28,6 @@ namespace GoodQuestion.Models.Playlist
         public float Tempo { get; set; }
         public int Duration_ms { get; set; }
         public DateTime LastRefreshed { get; set; }
-        public virtual ICollection<Song.Detail> Songs { get; set; }
+        public virtual ICollection<Song.SongDetail> Songs { get; set; }
     }
 }

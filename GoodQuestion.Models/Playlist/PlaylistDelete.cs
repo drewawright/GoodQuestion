@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GoodQuestion.Models.Playlist
 {
-    public class Delete
+    public class PlaylistDelete
     {
         public int PlaylistId { get; set; }
         public string PlaylistName { get; set; }

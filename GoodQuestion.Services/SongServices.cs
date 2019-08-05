@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GoodQuestion.Data;
+using GoodQuestion.Models.Song;
 using SpotifyAPI.Web;
 using SpotifyAPI.Web.Auth;
 
@@ -17,5 +19,10 @@ namespace GoodQuestion.Services
         };
         private string _accountId = "38vdur0tacvhr9wud418mvzqh";
 
+
+        public List<SongIndex> GetSongIndexDb()
+        {
+            return null;
+        }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GoodQuestion.Models.Song
 {
-    public class Edit
+    public class SongEdit
     {
         public string Name { get; set; }
         public string SongId { get; set; }
