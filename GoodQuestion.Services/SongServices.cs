@@ -165,7 +165,7 @@ namespace GoodQuestion.Services
 
             var count = tracks.Items.Count();
 
-            if (count < 100)
+            if (count > 100)
             {
                 var loops = count / 100;
 
