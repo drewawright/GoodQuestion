@@ -20,6 +20,27 @@ namespace GoodQuestion.Services
         };
         private string _accountId = "38vdur0tacvhr9wud418mvzqh";
 
+        public bool CheckIfSongExists(string songId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                try
+                {
+                    var entity = ctx
+                    .Songs
+                    .Single(e => e.SongId == songId);
+                    return true;
+                }
+                catch (InvalidOperationException)
+                {
+                    return false;
+                }
+                catch (ArgumentNullException)
+                {
+                    return false;
+                }
+            }
+        }
 
         public List<SongIndex> GetSongIndexDb(string playlistId)
         {
