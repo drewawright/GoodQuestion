@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace GoodQuestion.Models.Song
 {
-    public class SongEdit
+    public class Edit
     {
         public string Name { get; set; }
-
         public string Id { get; set; }
-
-        //public virtual ICollection<Playlist> Playlists { get; set; }
+        public List<string> PlaylistNames { get; set; }
+        public List<string> PlaylistIds { get; set; }
     }
 }

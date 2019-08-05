@@ -26,6 +26,6 @@ namespace GoodQuestion.Models.Playlist
         public float Valence { get; set; }
         public float Tempo { get; set; }
         public int Duration_ms { get; set; }
-        public virtual ICollection<Song> Songs { get; set; }
+        public virtual ICollection<Song.Detail> Songs { get; set; }
     }
 }

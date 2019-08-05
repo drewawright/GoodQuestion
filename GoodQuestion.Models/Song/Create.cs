@@ -48,6 +48,5 @@ namespace GoodQuestion.Models
 
         public float Tempo { get; set; }
 
-        //public virtual ICollection<Playlist> Playlists { get; set; }
     }
 }

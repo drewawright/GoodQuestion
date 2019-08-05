@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GoodQuestion.Models.Song
 {
-    public class SongDetail
+    public class Detail
     {
         public string Name { get; set; }
 
@@ -47,7 +47,5 @@ namespace GoodQuestion.Models.Song
         public float Valence { get; set; }
 
         public float Tempo { get; set; }
-
-        //public virtual ICollection<Playlist> Playlists { get; set; }
     }
 }
