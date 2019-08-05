@@ -26,7 +26,7 @@ namespace GoodQuestion.Services
             {
                 try
                 {
-                    var entity = ctx
+                    var query = ctx
                     .Songs
                     .Single(e => e.SongId == songId);
                     return true;
@@ -39,6 +39,70 @@ namespace GoodQuestion.Services
                 {
                     return false;
                 }
+            }
+        }
+        
+        public bool CheckIfSongHasPlaylists(string songId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var query = ctx
+                    .Songs
+                    .Where(s => s.SongId == songId)
+                    .Single();
+
+                if (query.Playlists.Count != 0)
+                {
+                    return true;
+                }
+                else return false;
+            };
+        }
+
+        public SongDetail GetSongDetail(string songId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var query = ctx
+                    .Songs
+                    .Single(s => s.SongId == songId);
+
+                var songDetail = new SongDetail {
+                    Name = query.Name,
+                    SongId = query.SongId,
+                    Artists = query.Artists,
+                    ImageUrl = query.ImageUrl,
+                    PlayerUrl = query.PlayerUrl,
+                    DurationMs = query.DurationMs,
+                    HasAudioFeatures = query.HasAudioFeatures,
+                    LastRefreshed = query.LastRefreshed,
+                    Danceability = query.Danceability,
+                    Energy = query.Energy,
+                    Key = query.Key,
+                    Loudness = query.Loudness,
+                    Mode = query.Mode,
+                    Speechiness = query.Speechiness,
+                    Acousticness = query.Acousticness,
+                    Instrumentalness = query.Instrumentalness,
+                    Liveness = query.Liveness,
+                    Valence = query.Valence,
+                    Tempo = query.Tempo
+                    };
+                return songDetail;
+                    
+            }
+        }
+
+        public bool DeleteSongDb(string songId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity = ctx
+                    .Songs
+                    .Single(e => e.SongId == songId);
+                ctx.Songs.Remove(entity);
+
+                return ctx.SaveChanges() == 1;
             }
         }
 
