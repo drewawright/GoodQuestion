@@ -28,16 +28,16 @@ namespace GoodQuestion.Services
                 {
                     var entity = ctx
                     .Songs
-                    .Single(e => e.Name.ToLower() == name.ToLower());
-                    return entity.CardApiId;
+                    .Single(e => e.SongId == songId);
+                    return true;
                 }
                 catch (InvalidOperationException)
                 {
-                    return 0;
+                    return false;
                 }
                 catch (ArgumentNullException)
                 {
-                    return 0;
+                    return false;
                 }
             }
         }
