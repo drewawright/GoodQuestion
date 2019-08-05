@@ -41,16 +41,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Playlist\Create.cs" />
-    <Compile Include="Playlist\Delete.cs" />
-    <Compile Include="Playlist\Detail.cs" />
-    <Compile Include="Playlist\Edit.cs" />
-    <Compile Include="Playlist\Index.cs" />
+    <Compile Include="Playlist\PlaylistCreate.cs" />
+    <Compile Include="Playlist\PlaylistDelete.cs" />
+    <Compile Include="Playlist\PlaylistDetail.cs" />
+    <Compile Include="Playlist\PlaylistEdit.cs" />
+    <Compile Include="Playlist\PlaylistIndex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Song\Create.cs" />
-    <Compile Include="Song\Detail.cs" />
-    <Compile Include="Song\Edit.cs" />
-    <Compile Include="Song\Index.cs" />
+    <Compile Include="Song\SongCreate.cs" />
+    <Compile Include="Song\SongDetail.cs" />
+    <Compile Include="Song\SongEdit.cs" />
+    <Compile Include="Song\SongIndex.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GoodQuestion.Data\GoodQuestion.Data.csproj">

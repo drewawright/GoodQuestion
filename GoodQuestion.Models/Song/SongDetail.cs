@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GoodQuestion.Models.Song
 {
-    public class Index
+    public class SongDetail
     {
         public string Name { get; set; }
 
@@ -19,6 +19,8 @@ namespace GoodQuestion.Models.Song
         public string PlayerUrl { get; set; }
 
         public int DurationMs { get; set; }
+
+        public bool HasAudioFeatures { get; set; }
 
         public DateTime LastRefreshed { get; set; }
 

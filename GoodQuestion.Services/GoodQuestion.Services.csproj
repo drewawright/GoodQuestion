@@ -62,5 +62,15 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GoodQuestion.Data\GoodQuestion.Data.csproj">
+      <Project>{D0D32E25-BED2-40E3-BE99-EA200AD6EA8C}</Project>
+      <Name>GoodQuestion.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GoodQuestion.Models\GoodQuestion.Models.csproj">
+      <Project>{AD13F442-4BBF-4594-BE20-C8FAB3F9FD7E}</Project>
+      <Name>GoodQuestion.Models</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

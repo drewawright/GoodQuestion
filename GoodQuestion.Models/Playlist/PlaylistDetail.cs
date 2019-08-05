@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GoodQuestion.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GoodQuestion.Models.Playlist
 {
-    public class Index
+    public class PlaylistDetail
     {
         public int PlaylistId { get; set; }
         public string PlaylistName { get; set; }
@@ -25,5 +26,6 @@ namespace GoodQuestion.Models.Playlist
         public float Valence { get; set; }
         public float Tempo { get; set; }
         public int Duration_ms { get; set; }
+        public virtual ICollection<Song.SongDetail> Songs { get; set; }
     }
 }
