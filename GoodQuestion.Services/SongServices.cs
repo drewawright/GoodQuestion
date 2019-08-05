@@ -27,39 +27,86 @@ namespace GoodQuestion.Services
             return null;
         }
 
-        public bool GetSongSpotify(string songId)
+        private void GetSongAudioFeatures(Song song)
         {
-            FullTrack track = _api.GetTrack(songId);
+            AudioFeatures features = _api.GetAudioFeatures(song.SongId);
 
-            AudioFeatures features = _api.GetAudioFeatures(songId);
+            song.DurationMs = features.DurationMs;
+            song.Danceability = features.Danceability;
+            song.Energy = features.Energy;
+            song.Key = features.Key;
+            song.Loudness = features.Loudness;
+            song.Mode = features.Mode;
+            song.Speechiness = features.Speechiness;
+            song.Acousticness = features.Acousticness;
+            song.Instrumentalness = features.Instrumentalness;
+            song.Liveness = features.Liveness;
+            song.Valence = features.Valence;
+            song.Tempo = features.Tempo;
+            song.HasAudioFeatures = true;
+        }
 
-            Song dbTrack = new Song()
+        public bool GetSongsInPlaylist(string playlistId)
+        {
+            List<Song> songs = new List<Song>();
+
+            var tracks = _api.GetPlaylistTracks(playlistId);
+
+            var count = tracks.Items.Count();
+
+            if (count < 100)
             {
-                SongId = track.Id,
-                Name = track.Name,
-                Artists = track.Artists.ToString(),
-                ImageUrl = track.Album.Images[0].Url,
-                PlayerUrl = track.ExternUrls["spotify"],
-                DurationMs = track.DurationMs,
-                HasAudioFeatures = true,
-                LastRefreshed = DateTime.Now,
-                Danceability = features.Danceability,
-                Energy = features.Energy,
-                Key = features.Key,
-                Loudness = features.Loudness,
-                Mode = features.Mode,
-                Speechiness = features.Speechiness,
-                Acousticness = features.Acousticness,
-                Instrumentalness = features.Instrumentalness,
-                Liveness = features.Liveness,
-                Valence = features.Valence,
-                Tempo = features.Tempo
-            };
+                var loops = count / 100;
+
+                if (count % 100 != 0)
+                {
+                    loops++;
+                }
+
+                for (int i = 1; i < loops; i++)
+                {
+                    var offset = i * 100;
+
+                    var additionalTracks = _api.GetPlaylistTracks(playlistId, null, 100, offset, null);
+
+                    foreach (var track in additionalTracks.Items)
+                    {
+                        tracks.Items.Add(track);
+                    }
+                }
+            }
+
+            foreach (var track in tracks.Items)
+            {
+                Song song = new Song
+                {
+                    Name = track.Track.Name,
+                    SongId = track.Track.Id,
+                    Artists = track.Track.Artists.ToString(),
+                    ImageUrl = track.Track.Album.Images[0].Url,
+                    PlayerUrl = track.Track.ExternUrls["spotify"],
+                    LastRefreshed = DateTime.Now,
+
+                };
+
+                songs.Add(song);
+            }
+
+            foreach (var track in songs)
+            {
+                GetSongAudioFeatures(track);
+            }
+
+            var changeCount = 0;
 
             using (var db = new ApplicationDbContext())
             {
-                db.Songs.Add(dbTrack);
-                return db.SaveChanges() == 1;
+                foreach (Song song in songs)
+                {
+                    db.Songs.Add(song);
+                    changeCount++;
+                }
+                return db.SaveChanges() == changeCount;
             }
         }
     }
