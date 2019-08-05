@@ -1,5 +1,8 @@
-﻿using System.Security.Claims;
+﻿using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using GoodQuestion.Data;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
@@ -45,6 +48,20 @@ namespace GoodQuestion.WebAPI.Models
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
+        }
+
+        public DbSet<Playlist> Playlists { get; set; }
+        public DbSet<Song> Songs { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+
+            modelBuilder.Entity<Playlist>()
+                .HasMany(c => c.Songs).WithMany(i => i.Playlists)
+                .Map(t => t.MapLeftKey("PlaylistId")
+                    .MapRightKey("SongId")
+                    .ToTable("PlaylistSong"));
         }
     }
 }
