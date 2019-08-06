@@ -69,6 +69,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PlaylistServices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SongServices.cs" />
   </ItemGroup>
