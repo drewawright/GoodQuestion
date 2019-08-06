@@ -95,6 +95,22 @@ namespace GoodQuestion.Services
             }
         }
 
+        public bool RefreshSongArtwork(string songId)
+        {
+            FullTrack track = _api.GetTrack(songId, null);
+
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity = ctx
+                    .Songs
+                    .Single(s => s.SongId == songId);
+
+                entity.ImageUrl = track.Album.Images[0].Url;
+                entity.LastRefreshed = DateTime.Now;
+                return ctx.SaveChanges() == 1;
+            }
+        }
+
         public bool DeleteSongDb(string songId)
         {
             using (var ctx = new ApplicationDbContext())
