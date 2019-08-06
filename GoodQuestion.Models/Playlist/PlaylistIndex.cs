@@ -13,6 +13,7 @@ namespace GoodQuestion.Models.Playlist
         public string ImageUrl { get; set; }
         public string OwnerId { get; set; }
         public DateTime LastRefreshed { get; set; }
+        public DateTime LastSyncedWithSpotify { get; set; }
         public float Danceability { get; set; }
         public float Energy { get; set; }
         public int Key { get; set; }
