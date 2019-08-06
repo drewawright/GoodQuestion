@@ -1,4 +1,5 @@
-﻿using GoodQuestion.Models.Playlist;
+﻿using GoodQuestion.Data;
+using GoodQuestion.Models.Playlist;
 using GoodQuestion.WebAPI.Models;
 using SpotifyAPI.Web;
 using System;
@@ -11,6 +12,13 @@ namespace GoodQuestion.Services
 {
     public class PlaylistServices
     {
+        private readonly Guid _userId;
+
+        public PlaylistServices(Guid userId)
+        {
+            _userId = userId;
+        }
+
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
             AccessToken = "",
@@ -38,6 +46,66 @@ namespace GoodQuestion.Services
                 {
                     return false;
                 }
+            }
+        }
+
+        public bool GetAllUserPlaylistsSpotify(string spotifyId)
+        {
+            List<Playlist> playlistsToAdd = new List<Playlist>();
+
+            var playlists = _api.GetUserPlaylists(spotifyId);
+
+            var count = playlists.Items.Count;
+
+            if (count > 50)
+            {
+                var loops = count / 50;
+
+                if (count % 50 != 0)
+                {
+                    loops++;
+                }
+
+                for (int i = 1; i < loops; i++)
+                {
+                    var offset = i * 50;
+
+                    var additionalPlaylists = _api.GetUserPlaylists(spotifyId, 50, offset);
+
+                    foreach (var playlist in additionalPlaylists.Items)
+                    {
+                        playlists.Items.Add(playlist);
+                    }
+                }
+            }
+
+            foreach (var playlist in playlists.Items)
+            {
+                Playlist userPlaylist = new Playlist
+                {
+                    OwnerId = playlist.Owner.Id,
+                    AppUserId = _userId,
+                    PlaylistId = playlist.Id,
+                    PlaylistName = playlist.Name,
+                    TracksUrl = playlist.Tracks.Href,
+                    ImageUrl = playlist.Images[0].Url,
+                    LastRefreshed = DateTime.Now,
+                    LastSyncedWithSpotify = DateTime.Now
+                };
+
+                playlistsToAdd.Add(userPlaylist);
+            }
+
+            var changeCount = 0;
+
+            using (var ctx = new ApplicationDbContext())
+            {
+                foreach (Playlist playlist in playlistsToAdd)
+                {
+                    ctx.Playlists.Add(playlist);
+                    changeCount++;
+                }
+                return ctx.SaveChanges() == changeCount;
             }
         }
 
