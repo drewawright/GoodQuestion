@@ -28,6 +28,7 @@ namespace GoodQuestion.Models.Playlist
         public float Tempo { get; set; }
         public int Duration_ms { get; set; }
         public DateTime LastRefreshed { get; set; }
+        public DateTime LastSyncedWithSpotify { get; set; }
         public virtual ICollection<Song.SongDetail> Songs { get; set; }
     }
 }
