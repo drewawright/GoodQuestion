@@ -12,7 +12,6 @@ namespace GoodQuestion.Services
 {
     public class PlaylistServices
     {
-
         private readonly Guid _userId;
 
         public PlaylistServices(Guid userId)
@@ -197,7 +196,6 @@ namespace GoodQuestion.Services
                 return query.ToList();
             }
         }
-
         public PlaylistDetail GetPlaylistDetail(string playlistId)
         {
             using (var ctx = new ApplicationDbContext())
@@ -313,6 +311,26 @@ namespace GoodQuestion.Services
                 entity.Duration_ms = duration_ms;
 
                 return ctx.SaveChanges() == 1;
+            }
+        }
+        
+        public bool UpdateDbPlaylist(string playlistId)
+        {
+            var spotifyPlaylist = _api.GetPlaylist(playlistId);
+
+            using (var db = new ApplicationDbContext())
+            {
+                var entity = db
+                    .Playlists
+                    .Single(e => e.PlaylistId == playlistId);
+
+                entity.PlaylistName = spotifyPlaylist.Name;
+                entity.ImageUrl = spotifyPlaylist.Images[0].Url;
+                entity.OwnerId = spotifyPlaylist.Owner.Id;
+                entity.LastRefreshed = DateTime.Now;
+                entity.LastSyncedWithSpotify = DateTime.Now;
+
+                return db.SaveChanges() == 1;
             }
         }
     }
