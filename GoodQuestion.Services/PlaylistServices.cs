@@ -90,7 +90,7 @@ namespace GoodQuestion.Services
                     TracksUrl = playlist.Tracks.Href,
                     ImageUrl = playlist.Images[0].Url,
                     LastRefreshed = DateTime.Now,
-                    //LastSyncedWithSpotify = DateTime.Now
+                    LastSyncedWithSpotify = DateTime.Now
                 };
 
                 playlistsToAdd.Add(userPlaylist);
