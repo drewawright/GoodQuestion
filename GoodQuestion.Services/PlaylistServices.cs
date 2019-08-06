@@ -12,6 +12,7 @@ namespace GoodQuestion.Services
 {
     public class PlaylistServices
     {
+
         private readonly Guid _userId;
 
         public PlaylistServices(Guid userId)
@@ -46,6 +47,28 @@ namespace GoodQuestion.Services
                 {
                     return false;
                 }
+            }
+        }
+
+        public bool RefreshUserPlaylistsArtwork(Guid appUserId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity =
+                    ctx
+                    .Playlists
+                    .Where(p => p.AppUserId == appUserId);
+
+                int changeCount = 0;
+                foreach(var playlist in entity)
+                {
+                    var apiPlaylist = _api.GetPlaylist(playlist.PlaylistId);
+                    playlist.ImageUrl = apiPlaylist.Images[0].Url;
+                    playlist.LastRefreshed = DateTime.Now;
+                    changeCount++;
+                }
+
+                return ctx.SaveChanges() == changeCount;
             }
         }
 
@@ -143,6 +166,7 @@ namespace GoodQuestion.Services
                 return query.ToList();
             }
         }
+
         public PlaylistDetail GetPlaylistDetail(string playlistId)
         {
             using (var ctx = new ApplicationDbContext())
