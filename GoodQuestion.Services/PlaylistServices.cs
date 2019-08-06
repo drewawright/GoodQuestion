@@ -260,27 +260,5 @@ namespace GoodQuestion.Services
                 return db.SaveChanges() == 1;
             }
         }
-
-        public bool GetPlaylistAudioFeatures(string playlistId)
-        {
-            using (var db = new ApplicationDbContext())
-            {
-                var playlist = db
-                    .Playlists
-                    .Single(e => e.PlaylistId == playlistId);
-
-                int count = 0;
-                float danceability = 0;
-
-                foreach (var song in playlist.Songs)
-                {
-                    danceability += song.Danceability;
-
-                    count++;
-                }
-
-                playlist.Danceability = danceability / count;
-            }
-        }
     }
 }
