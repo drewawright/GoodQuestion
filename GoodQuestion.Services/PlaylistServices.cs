@@ -11,6 +11,7 @@ namespace GoodQuestion.Services
 {
     public class PlaylistServices
     {
+
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
             AccessToken = "",
@@ -38,6 +39,24 @@ namespace GoodQuestion.Services
                 {
                     return false;
                 }
+            }
+        }
+
+        public bool RefreshUserPlaylistsArtwork(Guid appUserId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity =
+                    ctx
+                    .Playlists
+                    .Where(p => p.AppUserId == appUserId);
+
+                foreach(var playlist in entity)
+                {
+                    
+                }
+
+                return true;
             }
         }
 
@@ -75,6 +94,7 @@ namespace GoodQuestion.Services
                 return query.ToList();
             }
         }
+
         public PlaylistDetail GetPlaylistDetail(string playlistId)
         {
             using (var ctx = new ApplicationDbContext())
