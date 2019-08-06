@@ -196,6 +196,7 @@ namespace GoodQuestion.Services
                 return query.ToList();
             }
         }
+
         public PlaylistDetail GetPlaylistDetail(string playlistId)
         {
             using (var ctx = new ApplicationDbContext())
