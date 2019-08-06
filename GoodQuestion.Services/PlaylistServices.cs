@@ -59,12 +59,16 @@ namespace GoodQuestion.Services
                     .Playlists
                     .Where(p => p.AppUserId == appUserId);
 
+                int changeCount = 0;
                 foreach(var playlist in entity)
                 {
-                    
+                    var apiPlaylist = _api.GetPlaylist(playlist.PlaylistId);
+                    playlist.ImageUrl = apiPlaylist.Images[0].Url;
+                    playlist.LastRefreshed = DateTime.Now;
+                    changeCount++;
                 }
 
-                return true;
+                return ctx.SaveChanges() == changeCount;
             }
         }
 
