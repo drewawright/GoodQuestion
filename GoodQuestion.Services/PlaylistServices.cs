@@ -28,6 +28,30 @@ namespace GoodQuestion.Services
 
         private string _accountId = "38vdur0tacvhr9wud418mvzqh";
 
+        private bool CheckUserHasPlaylists(Guid userId)
+        {
+            var stringUserId = userId.ToString();
+            using (var ctx = new ApplicationDbContext())
+            {
+                try
+                {
+                    var query = ctx
+                    .Users
+                    .Single(u => u.Id == stringUserId);
+                    if (query.HasPlaylists == true) { return true; }
+                    else return false;
+                }
+                catch (InvalidOperationException)
+                {
+                    return false;
+                }
+                catch (ArgumentNullException)
+                {
+                    return false;
+                }
+            }
+        }
+
         public bool CheckIfPlaylistExists(string playlistId)
         {
             using (var ctx = new ApplicationDbContext())
