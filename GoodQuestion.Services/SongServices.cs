@@ -227,7 +227,7 @@ namespace GoodQuestion.Services
             {
                 track.Playlists.Add(playlist);
 
-                if (CheckIfSongExists(track.SongId))
+                if (!CheckIfSongExists(track.SongId))
                 {
                     newSongs.Add(track);
                 }

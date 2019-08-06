@@ -1,4 +1,5 @@
-﻿using GoodQuestion.Models.Playlist;
+﻿using GoodQuestion.Data;
+using GoodQuestion.Models.Playlist;
 using GoodQuestion.WebAPI.Models;
 using SpotifyAPI.Web;
 using System;
@@ -117,6 +118,24 @@ namespace GoodQuestion.Services
             }
         }
 
+        public bool UpdateDbPlaylist(string playlistId)
+        {
+            var spotifyPlaylist = _api.GetPlaylist(playlistId);
 
+            using (var db = new ApplicationDbContext())
+            {
+                var entity = db
+                    .Playlists
+                    .Single(e => e.PlaylistId == playlistId);
+
+                entity.PlaylistName = spotifyPlaylist.Name;
+                entity.ImageUrl = spotifyPlaylist.Images[0].Url;
+                entity.OwnerId = spotifyPlaylist.Owner.Id;
+                entity.LastRefreshed = DateTime.Now;
+                
+
+                return db.SaveChanges() == 1;
+            }
+        }
     }
 }
