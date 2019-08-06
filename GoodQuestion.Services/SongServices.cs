@@ -252,6 +252,61 @@ namespace GoodQuestion.Services
             }
         }
 
+        public bool RefreshPlaylistSongsArtwork(string playlistId)
+        {
+            List<Song> updateSongs = new List<Song>();
+
+            var tracks = _api.GetPlaylistTracks(playlistId);
+
+            var count = tracks.Items.Count();
+
+            if (count > 100)
+            {
+                var loops = count / 100;
+
+                if (count % 100 != 0)
+                {
+                    loops++;
+                }
+
+                for (int i = 1; i < loops; i++)
+                {
+                    var offset = i * 100;
+
+                    var additionalTracks = _api.GetPlaylistTracks(playlistId, null, 100, offset, null);
+
+                    foreach (var track in additionalTracks.Items)
+                    {
+                        tracks.Items.Add(track);
+                    }
+                }
+            }
+
+            var changeCount = 0;
+            var loopCount = 0;
+
+            using (var db = new ApplicationDbContext())
+            {
+                var entity =
+                    db
+                    .Playlists
+                    .Where(p => p.PlaylistId == playlistId)
+                    .Single();
+
+                foreach(var song in entity.Songs)
+                {
+                    if (song.SongId == tracks.Items[loopCount].Track.Id)
+                    {
+                        song.LastRefreshed = DateTime.Now;
+                        song.ImageUrl = tracks.Items[loopCount].Track.Album.Images[0].Url;
+                        changeCount++;
+                    }
+                    loopCount++;
+                }
+                return db.SaveChanges() == changeCount;
+            }
+        }
+
         private Playlist GetPlaylistFromDb(string playlistId)
         {
             using (var ctx = new ApplicationDbContext())
