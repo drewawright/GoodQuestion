@@ -1,5 +1,6 @@
 ﻿using GoodQuestion.Models.Playlist;
 using GoodQuestion.WebAPI.Models;
+using SpotifyAPI.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,14 @@ namespace GoodQuestion.Services
 {
     public class PlaylistServices
     {
+        private SpotifyWebAPI _api = new SpotifyWebAPI
+        {
+            AccessToken = "",
+            TokenType = "Bearer"
+        };
+
+        private string _accountId = "38vdur0tacvhr9wud418mvzqh";
+
         public bool CheckIfPlaylistExists(string playlistId)
         {
             using (var ctx = new ApplicationDbContext())
