@@ -1,4 +1,5 @@
-﻿using GoodQuestion.WebAPI.Models;
+﻿using GoodQuestion.Models.Playlist;
+using GoodQuestion.WebAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,37 @@ namespace GoodQuestion.Services
                 {
                     return false;
                 }
+            }
+        }
+
+        public PlaylistDetail GetPlaylistDetail(string playlistId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var query = ctx
+                    .Playlists
+                    .Single(s => s.PlaylistId == playlistId);
+
+                var playlistDetail = new PlaylistDetail
+                {
+                    PlaylistName = query.PlaylistName,
+                    ImageUrl = query.ImageUrl,
+                    OwnerId = query.OwnerId,
+                    LastRefreshed = DateTime.Now,
+                    Danceability = query.Danceability,
+                    Energy = query.Energy,
+                    Key = query.Key,
+                    Loudness = query.Loudness,
+                    Mode = query.Mode,
+                    Speechiness = query.Speechiness,
+                    Acousticness = query.Acousticness,
+                    Instrumentalness = query.Instrumentalness,
+                    Liveness = query.Liveness,
+                    Valence = query.Valence,
+                    Tempo = query.Tempo,
+                    Duration_ms = query.Duration_ms
+                };
+                return playlistDetail;
             }
         }
     }
