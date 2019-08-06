@@ -16,7 +16,7 @@ namespace GoodQuestion.WebAPI
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
-            CreateRolesAndUsers();
+            //CreateRolesAndUsers();
         }
 
         //Creates Default User Roles and an Admin User
