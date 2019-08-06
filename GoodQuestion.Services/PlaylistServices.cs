@@ -62,5 +62,20 @@ namespace GoodQuestion.Services
                 return playlistDetail;
             }
         }
+
+        public bool DeletePlaylistDb(string playlistId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity = ctx
+                    .Playlists
+                    .Single(e => e.PlaylistId == playlistId);
+                ctx.Playlists.Remove(entity);
+
+                return ctx.SaveChanges() == 1;
+            }
+        }
+
+
     }
 }
