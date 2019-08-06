@@ -16,6 +16,7 @@ using Microsoft.Owin.Security.OAuth;
 using GoodQuestion.WebAPI.Models;
 using GoodQuestion.WebAPI.Providers;
 using GoodQuestion.WebAPI.Results;
+using GoodQuestion.Data;
 
 namespace GoodQuestion.WebAPI.Controllers
 {

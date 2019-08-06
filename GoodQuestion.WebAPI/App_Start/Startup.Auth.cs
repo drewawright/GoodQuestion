@@ -11,6 +11,7 @@ using Owin;
 using GoodQuestion.WebAPI.Providers;
 using GoodQuestion.WebAPI.Models;
 using Owin.Security.Providers.Spotify;
+using GoodQuestion.Data;
 
 namespace GoodQuestion.WebAPI
 {

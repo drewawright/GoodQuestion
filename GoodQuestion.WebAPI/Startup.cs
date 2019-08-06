@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GoodQuestion.Data;
 using GoodQuestion.WebAPI.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -16,7 +17,7 @@ namespace GoodQuestion.WebAPI
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
-            //CreateRolesAndUsers();
+            CreateRolesAndUsers();
         }
 
         //Creates Default User Roles and an Admin User

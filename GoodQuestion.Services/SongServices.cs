@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GoodQuestion.Data;
 using GoodQuestion.Models.Song;
-using GoodQuestion.WebAPI.Models;
 using SpotifyAPI.Web;
-using SpotifyAPI.Web.Auth;
 using SpotifyAPI.Web.Models;
 
 namespace GoodQuestion.Services
