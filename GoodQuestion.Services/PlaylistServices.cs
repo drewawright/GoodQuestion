@@ -27,6 +27,29 @@ namespace GoodQuestion.Services
 
         private string _accountId = "38vdur0tacvhr9wud418mvzqh";
 
+        private bool CheckUserHasPlaylists()
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                try
+                {
+                    var query = ctx
+                    .Users
+                    .Single(u => u.Id == _userId.ToString());
+                    if (query.HasPlaylists == true) { return true; }
+                    else return false;
+                }
+                catch (InvalidOperationException)
+                {
+                    return false;
+                }
+                catch (ArgumentNullException)
+                {
+                    return false;
+                }
+            }
+        }
+
         public bool CheckIfPlaylistExists(string playlistId)
         {
             using (var ctx = new ApplicationDbContext())
@@ -46,6 +69,28 @@ namespace GoodQuestion.Services
                 {
                     return false;
                 }
+            }
+        }
+
+        public bool RefreshUserPlaylistsArtwork()
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity =
+                    ctx
+                    .Playlists
+                    .Where(p => p.AppUserId == _userId);
+
+                int changeCount = 0;
+                foreach(var playlist in entity)
+                {
+                    var apiPlaylist = _api.GetPlaylist(playlist.PlaylistId);
+                    playlist.ImageUrl = apiPlaylist.Images[0].Url;
+                    playlist.LastRefreshed = DateTime.Now;
+                    changeCount++;
+                }
+
+                return ctx.SaveChanges() == changeCount;
             }
         }
 
@@ -105,18 +150,26 @@ namespace GoodQuestion.Services
                     ctx.Playlists.Add(playlist);
                     changeCount++;
                 }
+                if (changeCount >= 1)
+                {
+                    var query = ctx
+                        .Users
+                        .Single(u => u.Id == _userId.ToString());
+                    query.HasPlaylists = true;
+                    changeCount++;
+                }
                 return ctx.SaveChanges() == changeCount;
             }
         }
 
-        public List<PlaylistIndex> GetPlaylistIndex(Guid appUserId)
+        public List<PlaylistIndex> GetPlaylistIndex()
         {
             using (var ctx = new ApplicationDbContext())
             {
                 var query =
                         ctx
                         .Playlists
-                        .Where(p => p.AppUserId == appUserId)
+                        .Where(p => p.AppUserId == _userId)
                         .Select(p =>
                             new PlaylistIndex
                             {
