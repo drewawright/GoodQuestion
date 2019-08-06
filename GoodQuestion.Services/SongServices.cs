@@ -179,6 +179,8 @@ namespace GoodQuestion.Services
 
             var tracks = _api.GetPlaylistTracks(playlistId);
 
+            var playlist = GetPlaylistFromDb(playlistId);
+
             var count = tracks.Items.Count();
 
             if (count > 100)
@@ -213,27 +215,53 @@ namespace GoodQuestion.Services
                     ImageUrl = track.Track.Album.Images[0].Url,
                     PlayerUrl = track.Track.ExternUrls["spotify"],
                     LastRefreshed = DateTime.Now,
-
                 };
 
                 songs.Add(song);
             }
 
+            var newSongs = new List<Song>();
+
+            //Add playlist to all songs, add new songs to list of new songs
             foreach (var track in songs)
             {
-                GetSongAudioFeatures(track);
+                track.Playlists.Add(playlist);
+
+                if (CheckIfSongExists(track.SongId))
+                {
+                    newSongs.Add(track);
+                }
+            }
+
+            //Get audio features for new songs
+            foreach (var song in newSongs)
+            { 
+                GetSongAudioFeatures(song);
             }
 
             var changeCount = 0;
 
             using (var db = new ApplicationDbContext())
             {
-                foreach (Song song in songs)
+                foreach (Song song in newSongs)
                 {
                     db.Songs.Add(song);
                     changeCount++;
                 }
                 return db.SaveChanges() == changeCount;
+            }
+        }
+
+        private Playlist GetPlaylistFromDb(string playlistId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var query =
+                    ctx
+                    .Playlists
+                    .Where(p => p.PlaylistId == playlistId)
+                    .Single();
+                return query;
             }
         }
     }
