@@ -41,6 +41,15 @@ namespace GoodQuestion.WebAPI.Controllers
             return Ok(refreshed);
         }
 
+        // GET api/Playlist/GetAllUserPlaylists
+        public IHttpActionResult GetAllPlaylistsSpotify(string spotifyId)
+        {
+            var svc = CreatePlaylistServices();
+            var playlists = svc.GetAllUserPlaylistsSpotify(spotifyId);
+
+            return Ok(playlists);
+        }
+
         private PlaylistServices CreatePlaylistServices()
         {
             var userId = Guid.Parse(User.Identity.GetUserId());
