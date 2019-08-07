@@ -13,6 +13,15 @@ namespace GoodQuestion.WebAPI.Controllers
     [RoutePrefix("api/Playlist")]
     public class PlaylistController : ApiController
     {
+        // GET : All user playlists from spotify
+        public IHttpActionResult GetAllPlaylistsSpotify(string spotifyId)
+        {
+            var service = CreatePlaylistServices();
+            var playlists = service.GetAllUserPlaylistsSpotify(spotifyId);
+
+            return Ok(playlists);
+        }
+
         private PlaylistServices CreatePlaylistServices()
         {
             var userId = Guid.Parse(User.Identity.GetUserId());
