@@ -250,10 +250,11 @@ namespace GoodQuestion.Services
                         .Where(u => u.Id == _userId.ToString())
                         .Single();
 
-                var playlists =
+/*                var playlists =
                     ctx
-                        .Playlists
-                        .Where(p => p.AppUserId.ToString() == entity.Id);
+                        .Users
+                        .Where(u => u.Id.ToString() == entity.Id)
+                        .Single();*/
 
                 float count = 0;
                 float danceability = 0;
@@ -269,7 +270,7 @@ namespace GoodQuestion.Services
                 var mode = new List<int>();
                 int duration_ms = 0;
 
-                foreach (var playlist in playlists)
+                foreach (var playlist in entity.Playlists)
                 {
                     danceability += playlist.Danceability;
                     energy += playlist.Energy;
