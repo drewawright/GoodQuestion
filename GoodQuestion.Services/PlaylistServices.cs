@@ -18,11 +18,10 @@ namespace GoodQuestion.Services
 
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
-            AccessToken = "",
+            AccessToken = "BQBqTJQ_0ovfHkg3NFwj0TWxwvU8t7WoX05b8NMWo4OAm40ySJXTlEpNDM5u1XQq4N8_G0Rg8TpsVnjCdfodImpuicaALIv5WZIVc9eRHippgdRtGqQtJuqlfkW-DqFTwQRCDAMH6yfLuzgb0ZMbvJm5YXvNNv20ZjUF9CS-7Rst1X1RnseQ4WC__oUStuU_pVRL-RUXHjs9E82EMuxLr0g13jP_POCdycHj3I0MkZ0v0HfrjT1p3CK7J94zjQdxTfYygavZuWWfwtDKkdud",
             TokenType = "Bearer"
         };
-
-        private string _accountId = "38vdur0tacvhr9wud418mvzqh";
+        private string _accountId = "chillpill9623";
 
         private bool CheckUserHasPlaylists()
         {
@@ -96,7 +95,7 @@ namespace GoodQuestion.Services
         {
             List<Playlist> playlistsToAdd = new List<Playlist>();
             var playlists = _api.GetUserPlaylists(spotifyId);
-            var count = playlists.Items.Count;
+            var count = playlists.Total;
             if (count > 50)
             {
                 var loops = count / 50;
