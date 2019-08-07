@@ -13,6 +13,24 @@ namespace GoodQuestion.WebAPI.Controllers
     [RoutePrefix("api/Playlist")]
     public class PlaylistController : ApiController
     {
+
+        //GET api/Playlist/Index
+        public IHttpActionResult GetPlaylistIndex()
+        {
+            var svc = CreatePlaylistServices();
+            var playlists = svc.GetPlaylistIndex();
+            return Ok(playlists);
+        }
+
+        //DELETE api/Playlist/Delete 
+        public IHttpActionResult DeletePlaylist(string playlistId)
+        {
+            var svc = CreatePlaylistServices();
+
+            if (!svc.DeletePlaylistDb(playlistId))
+                return InternalServerError();
+
+            return Ok();
         //PUT api/Playlist
         public IHttpActionResult RefreshUserPlaylistsArtwork()
         {
