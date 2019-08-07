@@ -15,6 +15,7 @@ namespace GoodQuestion.WebAPI.Controllers
     {
 
         //GET api/Playlist/Index
+        [Route("Index")]
         public IHttpActionResult GetPlaylistIndex()
         {
             var svc = CreatePlaylistServices();
@@ -22,7 +23,17 @@ namespace GoodQuestion.WebAPI.Controllers
             return Ok(playlists);
         }
 
-        //DELETE api/Playlist/Delete 
+        //PUT api/Playlist
+        [HttpPut]
+        public IHttpActionResult RefreshUserPlaylistsArtwork()
+        {
+            var svc = CreatePlaylistServices();
+            var refreshed = svc.RefreshUserPlaylistsArtwork();
+            return Ok(refreshed);
+        }
+
+        //DELETE api/Playlist/Delete
+        [Route("Delete/{playlistId}")]
         public IHttpActionResult DeletePlaylist(string playlistId)
         {
             var svc = CreatePlaylistServices();
@@ -33,15 +44,8 @@ namespace GoodQuestion.WebAPI.Controllers
             return Ok();
         }
 
-        //PUT api/Playlist
-        public IHttpActionResult RefreshUserPlaylistsArtwork()
-        {
-            var svc = CreatePlaylistServices();
-            var refreshed = svc.RefreshUserPlaylistsArtwork();
-            return Ok(refreshed);
-        }
-
         // GET api/Playlist/GetAllUserPlaylists
+        [Route("{spotifyId}")]
         public IHttpActionResult GetAllUserPlaylistsSpotify(string spotifyId)
         {
             var svc = CreatePlaylistServices();
@@ -51,6 +55,7 @@ namespace GoodQuestion.WebAPI.Controllers
         }
 
         // PUT api/Playlist/UpdateDbPlaylist
+        [Route("{playlistId}")]
         public IHttpActionResult UpdateDbPlaylist(string playlistId)
         {
             var svc = CreatePlaylistServices();
@@ -60,6 +65,7 @@ namespace GoodQuestion.WebAPI.Controllers
         }
 
         // GET api/Playlist/PlaylistDetails
+        [Route("Detail/{playlistId}")]
         public IHttpActionResult GetPlaylistDetails(string playlistId)
         {
             var svc = CreatePlaylistServices();
