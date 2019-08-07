@@ -31,6 +31,8 @@ namespace GoodQuestion.WebAPI.Controllers
                 return InternalServerError();
 
             return Ok();
+        }
+
         //PUT api/Playlist
         public IHttpActionResult RefreshUserPlaylistsArtwork()
         {
