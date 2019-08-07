@@ -29,6 +29,20 @@ namespace GoodQuestion.WebAPI.Controllers
                 return InternalServerError();
 
             return Ok();
+        //GET api/Song/GetFromSpotify
+        public IHttpActionResult GetFromSpotify(string playlistId)
+        {
+            var svc = CreateSongServices();
+            var songs = svc.GetSongsInPlaylist(playlistId);
+            return Ok(songs);
+        }
+
+        //PUT api/Song/
+        public IHttpActionResult PutRefreshPlaylistSongsArtwork(string playlistId)
+        {
+            var svc = CreateSongServices();
+            var refreshed = svc.RefreshPlaylistSongsArtwork(playlistId);
+            return Ok(refreshed);
         }
 
         private SongServices CreateSongServices()

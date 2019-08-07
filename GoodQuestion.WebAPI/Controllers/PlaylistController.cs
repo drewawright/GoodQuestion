@@ -31,6 +31,12 @@ namespace GoodQuestion.WebAPI.Controllers
                 return InternalServerError();
 
             return Ok();
+        //PUT api/Playlist
+        public IHttpActionResult RefreshUserPlaylistsArtwork()
+        {
+            var svc = CreatePlaylistServices();
+            var refreshed = svc.RefreshUserPlaylistsArtwork();
+            return Ok(refreshed);
         }
 
         private PlaylistServices CreatePlaylistServices()
