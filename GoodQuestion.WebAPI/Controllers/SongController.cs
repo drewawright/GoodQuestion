@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GoodQuestion.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,5 +10,11 @@ namespace GoodQuestion.WebAPI.Controllers
 {
     public class SongController : ApiController
     {
+
+        private SongServices CreateSongServices()
+        {
+            var songService = new SongServices();
+            return songService;
+        } 
     }
 }
