@@ -59,6 +59,15 @@ namespace GoodQuestion.WebAPI.Controllers
             return Ok(playlistUpdate);
         }
 
+        // GET api/Playlist/PlaylistDetails
+        public IHttpActionResult GetPlaylistDetails(string playlistId)
+        {
+            var svc = CreatePlaylistServices();
+            var details = svc.GetPlaylistDetail(playlistId);
+
+            return Ok(details);
+        }
+
         private PlaylistServices CreatePlaylistServices()
         {
             var userId = Guid.Parse(User.Identity.GetUserId());
