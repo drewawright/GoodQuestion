@@ -12,10 +12,10 @@ namespace GoodQuestion.Services
     {
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
-            AccessToken = "BQAu0mW3ne5pg89O1GWpqLCKOAS6p3mRVlzOSiHcwwYyPZhJugeJH7Oym05t2mlm8PWTpxAX9wQgWMv_O3MVqK1FPrN8amq_NDzewVBljSXZVEpNChYAtibNMyHP6TKN78pi91MaZ7K2wRh1ksEW0ZUkaPJ1jnMZWN6expIA5GwY6f5lYcK-RQV2W9RT1xYzoHO4qKVfh0dZdDZLDoa9lC_dnX9tD_A3UcxvJteHZDev1kFihT_q5_YEEVQ3r_ekpEPuicvoZGjJJNoX0AAH8w-vPehQnIB9",
+            AccessToken = "BQBqTJQ_0ovfHkg3NFwj0TWxwvU8t7WoX05b8NMWo4OAm40ySJXTlEpNDM5u1XQq4N8_G0Rg8TpsVnjCdfodImpuicaALIv5WZIVc9eRHippgdRtGqQtJuqlfkW-DqFTwQRCDAMH6yfLuzgb0ZMbvJm5YXvNNv20ZjUF9CS-7Rst1X1RnseQ4WC__oUStuU_pVRL-RUXHjs9E82EMuxLr0g13jP_POCdycHj3I0MkZ0v0HfrjT1p3CK7J94zjQdxTfYygavZuWWfwtDKkdud",
             TokenType = "Bearer"
         };
-        private string _accountId = "38vdur0tacvhr9wud418mvzqh";
+        private string _accountId = "chillpill9623";
 
         public bool CheckIfSongExists(string songId)
         {
@@ -185,7 +185,7 @@ namespace GoodQuestion.Services
                 playlist = new Playlist();
             }
             
-            var count = tracks.Items.Count();
+            var count = tracks.Total;
 
             if (count > 100)
             {
@@ -215,44 +215,54 @@ namespace GoodQuestion.Services
                 {
                     Name = track.Track.Name,
                     SongId = track.Track.Id,
-                    Artists = track.Track.Artists.ToString(),
+                    Artists = track.Track.Artists.First().Name,
                     ImageUrl = track.Track.Album.Images[0].Url,
                     PlayerUrl = track.Track.ExternUrls["spotify"],
                     LastRefreshed = DateTime.Now,
+                    Playlists = new List<Playlist>()
                 };
 
                 songs.Add(song);
             }
 
             var newSongs = new List<Song>();
-
-            //Add playlist to all songs, add new songs to list of new songs
-            foreach (var track in songs)
-            {
-                track.Playlists.Add(playlist);
-
-                if (!CheckIfSongExists(track.SongId))
-                {
-                    newSongs.Add(track);
-                }
-            }
-
-            //Get audio features for new songs
-            foreach (var song in newSongs)
-            { 
-                GetSongAudioFeatures(song);
-            }
-
             var changeCount = 0;
-
             using (var db = new ApplicationDbContext())
             {
+
+                var query =
+                        db
+                        .Playlists
+                        .Where(p => p.PlaylistId == playlistId)
+                        .Single();
+                //Add playlist to all songs, add new songs to list of new songs
+                foreach (var track in songs)
+                {
+
+                    track.Playlists.Add(query);
+                    if (!CheckIfSongExists(track.SongId))
+                    {
+                        newSongs.Add(track);
+                    }
+                }
+
+                //Get audio features for new songs
+                foreach (var song in newSongs)
+                { 
+                    GetSongAudioFeatures(song);
+                }
+
+
+
+
                 foreach (Song song in newSongs)
                 {
                     db.Songs.Add(song);
-                    changeCount++;
+                    changeCount = changeCount + 2;
                 }
-                return db.SaveChanges() == changeCount;
+                query.HasSongs = true;
+                int actual = db.SaveChanges();
+                return actual == changeCount; //db.SaveChanges() == changeCount;
             }
         }
 
