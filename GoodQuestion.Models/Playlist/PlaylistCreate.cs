@@ -30,5 +30,6 @@ namespace GoodQuestion.Models.Playlist
         public DateTime LastRefreshed { get; set; }
         public DateTime LastSyncedWithSpotify { get; set; }
         public virtual ICollection<Song.SongDetail> Songs { get; set; }
+        public virtual ICollection<ApplicationUser> AppUsers { get; set; }
     }
 }

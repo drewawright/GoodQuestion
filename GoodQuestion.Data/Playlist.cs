@@ -9,7 +9,6 @@ namespace GoodQuestion.Data
     public class Playlist
     {
         public string OwnerId { get; set; }
-        public Guid AppUserId { get; set; }
         public string PlaylistId { get; set; }
         public string PlaylistName { get; set; }
         public string TracksUrl { get; set; }
@@ -242,5 +241,6 @@ namespace GoodQuestion.Data
         public DateTime LastRefreshed { get; set; }
         public DateTime LastSyncedWithSpotify { get; set; }
         public virtual ICollection<Song> Songs { get; set; }
+        public virtual ICollection<ApplicationUser> AppUsers { get; set; }
     }
 }

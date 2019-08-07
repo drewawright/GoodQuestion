@@ -75,11 +75,12 @@ namespace GoodQuestion.Services
             {
                 var entity =
                     ctx
-                    .Playlists
-                    .Where(p => p.AppUserId == _userId);
-
+                    .Users
+                    .Where(u => u.Id == _userId.ToString())
+                    .Single();
+                    
                 int changeCount = 0;
-                foreach(var playlist in entity)
+                foreach(var playlist in entity.Playlists)
                 {
                     var apiPlaylist = _api.GetPlaylist(playlist.PlaylistId);
                     playlist.ImageUrl = apiPlaylist.Images[0].Url;

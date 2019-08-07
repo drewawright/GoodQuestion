@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Security.Claims;
@@ -29,6 +30,7 @@ namespace GoodQuestion.Data
         public float Valence { get; set; }
         public float Tempo { get; set; }
         public int Duration_ms { get; set; }
+        public virtual ICollection<Playlist> Playlists { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager, string authenticationType)
         {
@@ -70,6 +72,12 @@ namespace GoodQuestion.Data
                 .Map(t => t.MapLeftKey("PlaylistId")
                     .MapRightKey("SongId")
                     .ToTable("PlaylistSong"));
+
+            modelBuilder.Entity<ApplicationUser>()
+                .HasMany(c => c.Playlists).WithMany(i => i.AppUsers)
+                .Map(t => t.MapLeftKey("AppUserId")
+                    .MapRightKey("PlaylistId")
+                    .ToTable("UserPlaylist"));
         }
     }
     public class IdentityUserLoginConfiguration : EntityTypeConfiguration<IdentityUserLogin>
