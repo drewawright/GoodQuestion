@@ -12,7 +12,18 @@ namespace GoodQuestion.WebAPI.Controllers
     [RoutePrefix("api/Song")]
     public class SongController : ApiController
     {
+        // GET Song Index
+        [Route("Index/{playlistId}")]
+        public IHttpActionResult GetIndexDb(string playlistId)
+        {
+            SongServices songService = CreateSongServices();
+            var songs = songService.GetSongIndexDb(playlistId);
+
+            return Ok(songs);
+        }
+
         // GET api/Song/GetSongDetail
+        [Route("Detail/{songId}")]
         public IHttpActionResult GetSongDetail(string songId)
         {
             var svc = CreateSongServices();
@@ -20,16 +31,9 @@ namespace GoodQuestion.WebAPI.Controllers
             return Ok(song);
         }
 
-        //DELETE api/Song/DeleteSong
-        public IHttpActionResult DeleteSong(string songId)
-        {
-            var svc = CreateSongServices();
 
-            if (!svc.DeleteSongDb(songId))
-                return InternalServerError();
-
-            return Ok();
         //GET api/Song/GetFromSpotify
+        [Route("{playlistId}")]
         public IHttpActionResult GetFromSpotify(string playlistId)
         {
             var svc = CreateSongServices();
@@ -38,11 +42,24 @@ namespace GoodQuestion.WebAPI.Controllers
         }
 
         //PUT api/Song/
+        [Route("{playlistId}")]
         public IHttpActionResult PutRefreshPlaylistSongsArtwork(string playlistId)
         {
             var svc = CreateSongServices();
             var refreshed = svc.RefreshPlaylistSongsArtwork(playlistId);
             return Ok(refreshed);
+        }
+
+        //DELETE api/Song/DeleteSong
+        [Route("Delete/{songId}")]
+        public IHttpActionResult DeleteSong(string songId)
+        {
+            var svc = CreateSongServices();
+
+            if (!svc.DeleteSongDb(songId))
+                return InternalServerError();
+
+            return Ok();
         }
 
         private SongServices CreateSongServices()
@@ -51,13 +68,5 @@ namespace GoodQuestion.WebAPI.Controllers
             return songService;
         } 
 
-        // GET Song Index
-        public IHttpActionResult GetIndexDb(string playlistId)
-        {
-            SongServices songService = CreateSongServices();
-            var songs = songService.GetSongIndexDb(playlistId);
-
-            return Ok(songs);
-        }
     }
 }
