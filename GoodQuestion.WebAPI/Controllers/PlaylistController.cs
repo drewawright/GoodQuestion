@@ -31,7 +31,14 @@ namespace GoodQuestion.WebAPI.Controllers
             return Ok(details);
         }
 
+        // POST : Update Db Playlist
+        public IHttpActionResult UpdateDbPlaylist(string playlistId)
+        {
+            var service = CreatePlaylistServices();
+            var update = service.UpdateDbPlaylist(playlistId);
 
+            return Ok(update);
+        }
 
         private PlaylistServices CreatePlaylistServices()
         {
