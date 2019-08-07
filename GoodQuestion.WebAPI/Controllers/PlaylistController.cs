@@ -13,31 +13,12 @@ namespace GoodQuestion.WebAPI.Controllers
     [RoutePrefix("api/Playlist")]
     public class PlaylistController : ApiController
     {
-        // GET : All user playlists from spotify
-        public IHttpActionResult GetAllPlaylistsSpotify(string spotifyId)
+        //PUT api/Playlist
+        public IHttpActionResult RefreshUserPlaylistsArtwork()
         {
-            var service = CreatePlaylistServices();
-            var playlists = service.GetAllUserPlaylistsSpotify(spotifyId);
-
-            return Ok(playlists);
-        }
-
-        // GET : playlist details
-        public IHttpActionResult GetPlaylistDetails(string playlistId)
-        {
-            var service = CreatePlaylistServices();
-            var details = service.GetPlaylistDetail(playlistId);
-
-            return Ok(details);
-        }
-
-        // POST : Update Db Playlist
-        public IHttpActionResult UpdateDbPlaylist(string playlistId)
-        {
-            var service = CreatePlaylistServices();
-            var update = service.UpdateDbPlaylist(playlistId);
-
-            return Ok(update);
+            var svc = CreatePlaylistServices();
+            var refreshed = svc.RefreshUserPlaylistsArtwork();
+            return Ok(refreshed);
         }
 
         private PlaylistServices CreatePlaylistServices()

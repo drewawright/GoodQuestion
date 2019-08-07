@@ -174,9 +174,17 @@ namespace GoodQuestion.Services
             List<Song> songs = new List<Song>();
 
             var tracks = _api.GetPlaylistTracks(playlistId);
+            Playlist playlist;
 
-            var playlist = GetPlaylistFromDb(playlistId);
-
+            if (CheckIfPlaylistExists(playlistId))
+            {
+                playlist = GetPlaylistFromDb(playlistId);
+            }
+            else
+            {
+                playlist = new Playlist();
+            }
+            
             var count = tracks.Items.Count();
 
             if (count > 100)
@@ -313,6 +321,28 @@ namespace GoodQuestion.Services
                     .Where(p => p.PlaylistId == playlistId)
                     .Single();
                 return query;
+            }
+        }
+
+        private bool CheckIfPlaylistExists(string playlistId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                try
+                {
+                    var query = ctx
+                    .Playlists
+                    .Single(e => e.PlaylistId == playlistId);
+                    return true;
+                }
+                catch (InvalidOperationException)
+                {
+                    return false;
+                }
+                catch (ArgumentNullException)
+                {
+                    return false;
+                }
             }
         }
     }
