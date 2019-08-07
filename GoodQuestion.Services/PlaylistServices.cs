@@ -75,11 +75,12 @@ namespace GoodQuestion.Services
             {
                 var entity =
                     ctx
-                    .Playlists
-                    .Where(p => p.AppUserId == _userId);
+                    .Users
+                    .Where(u => u.Id == _userId.ToString())
+                    .Single();
 
                 int changeCount = 0;
-                foreach(var playlist in entity)
+                foreach (var playlist in entity.Playlists)
                 {
                     var apiPlaylist = _api.GetPlaylist(playlist.PlaylistId);
                     playlist.ImageUrl = apiPlaylist.Images[0].Url;
@@ -94,39 +95,30 @@ namespace GoodQuestion.Services
         public bool GetAllUserPlaylistsSpotify(string spotifyId)
         {
             List<Playlist> playlistsToAdd = new List<Playlist>();
-
             var playlists = _api.GetUserPlaylists(spotifyId);
-
             var count = playlists.Items.Count;
-
             if (count > 50)
             {
                 var loops = count / 50;
-
                 if (count % 50 != 0)
                 {
                     loops++;
                 }
-
                 for (int i = 1; i < loops; i++)
                 {
                     var offset = i * 50;
-
                     var additionalPlaylists = _api.GetUserPlaylists(spotifyId, 50, offset);
-
                     foreach (var playlist in additionalPlaylists.Items)
                     {
                         playlists.Items.Add(playlist);
                     }
                 }
             }
-
             foreach (var playlist in playlists.Items)
             {
                 Playlist userPlaylist = new Playlist
                 {
                     OwnerId = playlist.Owner.Id,
-                    AppUserId = _userId,
                     PlaylistId = playlist.Id,
                     PlaylistName = playlist.Name,
                     TracksUrl = playlist.Tracks.Href,
@@ -134,26 +126,28 @@ namespace GoodQuestion.Services
                     LastRefreshed = DateTime.Now,
                     LastSyncedWithSpotify = DateTime.Now
                 };
-
                 playlistsToAdd.Add(userPlaylist);
             }
-
             var changeCount = 0;
-
             using (var ctx = new ApplicationDbContext())
             {
+                var query = ctx
+                    .Users
+                    .Single(u => u.Id == _userId.ToString());
                 foreach (Playlist playlist in playlistsToAdd)
                 {
-                    ctx.Playlists.Add(playlist);
+                    if (!CheckIfPlaylistExists(playlist.PlaylistId))
+                    {
+                        ctx.Playlists.Add(playlist);
+                        changeCount++;
+                    }
+                    query.Playlists.Add(playlist);
                     changeCount++;
-                }
-                if (changeCount >= 1)
-                {
-                    var query = ctx
-                        .Users
-                        .Single(u => u.Id == _userId.ToString());
-                    query.HasPlaylists = true;
-                    changeCount++;
+                    if (changeCount >= 1)
+                    {
+                        query.HasPlaylists = true;
+                        changeCount++;
+                    }
                 }
                 return ctx.SaveChanges() == changeCount;
             }
@@ -163,34 +157,38 @@ namespace GoodQuestion.Services
         {
             using (var ctx = new ApplicationDbContext())
             {
-                var query =
+                var userQuery =
                         ctx
-                        .Playlists
-                        .Where(p => p.AppUserId == _userId)
-                        .Select(p =>
-                            new PlaylistIndex
-                            {
-                                PlaylistId = p.PlaylistId,
-                                PlaylistName = p.PlaylistName,
-                                ImageUrl = p.ImageUrl,
-                                OwnerId = p.OwnerId,
-                                LastRefreshed = p.LastRefreshed,
-                                LastSyncedWithSpotify = p.LastSyncedWithSpotify,
-                                Danceability = p.Danceability,
-                                Energy = p.Energy,
-                                Key = p.Key,
-                                Loudness = p.Loudness,
-                                Mode = p.Mode,
-                                Speechiness = p.Speechiness,
-                                Acousticness = p.Acousticness,
-                                Instrumentalness = p.Instrumentalness,
-                                Liveness = p.Liveness,
-                                Valence = p.Valence,
-                                Tempo = p.Tempo,
-                                Duration_ms = p.Duration_ms,
-                            });
-
-                return query.ToList();
+                        .Users
+                        .Where(u => u.Id == _userId.ToString())
+                        .Single();
+                List<PlaylistIndex> playlistIndexList = new List<PlaylistIndex>();
+                foreach (var playlist in userQuery.Playlists)
+                {
+                    PlaylistIndex newIndexItem = new PlaylistIndex
+                    {
+                        PlaylistId = playlist.PlaylistId,
+                        PlaylistName = playlist.PlaylistName,
+                        ImageUrl = playlist.ImageUrl,
+                        OwnerId = playlist.OwnerId,
+                        LastRefreshed = playlist.LastRefreshed,
+                        LastSyncedWithSpotify = playlist.LastSyncedWithSpotify,
+                        Danceability = playlist.Danceability,
+                        Energy = playlist.Energy,
+                        Key = playlist.Key,
+                        Loudness = playlist.Loudness,
+                        Mode = playlist.Mode,
+                        Speechiness = playlist.Speechiness,
+                        Acousticness = playlist.Acousticness,
+                        Instrumentalness = playlist.Instrumentalness,
+                        Liveness = playlist.Liveness,
+                        Valence = playlist.Valence,
+                        Tempo = playlist.Tempo,
+                        Duration_ms = playlist.Duration_ms,
+                    };
+                    playlistIndexList.Add(newIndexItem);
+                }
+                return playlistIndexList;
             }
         }
 
@@ -249,10 +247,11 @@ namespace GoodQuestion.Services
                         .Where(u => u.Id == _userId.ToString())
                         .Single();
 
-                var playlists =
-                    ctx
-                        .Playlists
-                        .Where(p => p.AppUserId.ToString() == entity.Id);
+                /*                var playlists =
+                                    ctx
+                                        .Users
+                                        .Where(u => u.Id.ToString() == entity.Id)
+                                        .Single();*/
 
                 float count = 0;
                 float danceability = 0;
@@ -268,7 +267,7 @@ namespace GoodQuestion.Services
                 var mode = new List<int>();
                 int duration_ms = 0;
 
-                foreach (var playlist in playlists)
+                foreach (var playlist in entity.Playlists)
                 {
                     danceability += playlist.Danceability;
                     energy += playlist.Energy;
@@ -311,7 +310,7 @@ namespace GoodQuestion.Services
                 return ctx.SaveChanges() == 1;
             }
         }
-        
+
         public bool UpdateDbPlaylist(string playlistId)
         {
             var spotifyPlaylist = _api.GetPlaylist(playlistId);
