@@ -71,6 +71,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IdentityModels.cs" />
+    <Compile Include="Migrations\201908062110049_InitialCreate.cs" />
+    <Compile Include="Migrations\201908062110049_InitialCreate.Designer.cs">
+      <DependentUpon>201908062110049_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908071441258_update_db.cs" />
+    <Compile Include="Migrations\201908071441258_update_db.Designer.cs">
+      <DependentUpon>201908071441258_update_db.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Playlist.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Song.cs" />
@@ -78,6 +87,14 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201908062110049_InitialCreate.resx">
+      <DependentUpon>201908062110049_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908071441258_update_db.resx">
+      <DependentUpon>201908071441258_update_db.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
