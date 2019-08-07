@@ -27,8 +27,8 @@ namespace GoodQuestion.WebAPI.Controllers
 
             if (!svc.DeleteSongDb(songId))
                 return InternalServerError();
-
             return Ok();
+        }
         //GET api/Song/GetFromSpotify
         public IHttpActionResult GetFromSpotify(string playlistId)
         {
@@ -49,7 +49,7 @@ namespace GoodQuestion.WebAPI.Controllers
         {
             var songService = new SongServices();
             return songService;
-        } 
+        }
 
         // GET Song Index
         public IHttpActionResult GetIndexDb(string playlistId)
