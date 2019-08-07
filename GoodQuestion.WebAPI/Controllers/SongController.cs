@@ -8,6 +8,8 @@ using System.Web.Http;
 
 namespace GoodQuestion.WebAPI.Controllers
 {
+    [Authorize]
+    [RoutePrefix("api/Song")]
     public class SongController : ApiController
     {
 
