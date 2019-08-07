@@ -42,12 +42,21 @@ namespace GoodQuestion.WebAPI.Controllers
         }
 
         // GET api/Playlist/GetAllUserPlaylists
-        public IHttpActionResult GetAllPlaylistsSpotify(string spotifyId)
+        public IHttpActionResult GetAllUserPlaylistsSpotify(string spotifyId)
         {
             var svc = CreatePlaylistServices();
             var playlists = svc.GetAllUserPlaylistsSpotify(spotifyId);
 
             return Ok(playlists);
+        }
+
+        // PUT api/Playlist/UpdateDbPlaylist
+        public IHttpActionResult UpdateDbPlaylist(string playlistId)
+        {
+            var svc = CreatePlaylistServices();
+            var playlistUpdate = svc.UpdateDbPlaylist(playlistId);
+
+            return Ok(playlistUpdate);
         }
 
         private PlaylistServices CreatePlaylistServices()
