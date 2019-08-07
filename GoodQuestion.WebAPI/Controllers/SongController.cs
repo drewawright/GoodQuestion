@@ -50,5 +50,14 @@ namespace GoodQuestion.WebAPI.Controllers
             var songService = new SongServices();
             return songService;
         } 
+
+        // GET Song Index
+        public IHttpActionResult GetIndexDb(string playlistId)
+        {
+            SongServices songService = CreateSongServices();
+            var songs = songService.GetSongIndexDb(playlistId);
+
+            return Ok(songs);
+        }
     }
 }
