@@ -66,7 +66,7 @@ namespace GoodQuestion.WebAPI.Controllers
         {
             var songService = new SongServices();
             return songService;
-        } 
+        }
 
     }
 }
