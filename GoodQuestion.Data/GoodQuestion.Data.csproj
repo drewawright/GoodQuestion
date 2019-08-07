@@ -71,6 +71,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IdentityModels.cs" />
+    <Compile Include="Migrations\201908062110049_InitialCreate.cs" />
+    <Compile Include="Migrations\201908062110049_InitialCreate.Designer.cs">
+      <DependentUpon>201908062110049_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201908071433546_CreatedJoiningTable.cs" />
+    <Compile Include="Migrations\201908071433546_CreatedJoiningTable.Designer.cs">
+      <DependentUpon>201908071433546_CreatedJoiningTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Playlist.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Song.cs" />
@@ -78,6 +87,14 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201908062110049_InitialCreate.resx">
+      <DependentUpon>201908062110049_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908071433546_CreatedJoiningTable.resx">
+      <DependentUpon>201908071433546_CreatedJoiningTable.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
