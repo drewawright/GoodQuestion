@@ -21,7 +21,7 @@ namespace GoodQuestion.Services
             AccessToken = "BQDUWPX4-8OLfmiQ2otDj400sSG4-X2FhYDWH-xTRfnDzDGlh9NgrY4_-k-yHy7Lf6n2jNonnCcMW1TSq21T7yPQe-0iEyX7bFJSYWk2sZPR76r6iS8NWCsQvwckzbGoPDWwm4uivnGpwHIUf-raM1e_voXyer7WTs2_Tj9PVNF2lcPyyBw_QSHe",
             TokenType = "Bearer"
         };
-        private string _accountId = "chillpill9623";
+        private string _accountId = "38vdur0tacvhr9wud418mvzqh";
 
         private bool CheckUserHasPlaylists()
         {
@@ -96,17 +96,17 @@ namespace GoodQuestion.Services
             List<Playlist> playlistsToAdd = new List<Playlist>();
             var playlists = _api.GetUserPlaylists(spotifyId);
             var count = playlists.Total;
-            if (count > 50)
+            if (count > 20)
             {
-                var loops = count / 50;
-                if (count % 50 != 0)
+                var loops = count / 20;
+                if (count % 20 != 0)
                 {
                     loops++;
                 }
                 for (int i = 1; i < loops; i++)
                 {
-                    var offset = i * 50;
-                    var additionalPlaylists = _api.GetUserPlaylists(spotifyId, 50, offset);
+                    var offset = i * 20;
+                    var additionalPlaylists = _api.GetUserPlaylists(spotifyId, 20, offset);
                     foreach (var playlist in additionalPlaylists.Items)
                     {
                         playlists.Items.Add(playlist);
@@ -140,14 +140,16 @@ namespace GoodQuestion.Services
                         ctx.Playlists.Add(playlist);
                         changeCount++;
                     }
+
                     query.Playlists.Add(playlist);
                     changeCount++;
+
                     if (changeCount >= 1)
                     {
                         query.HasPlaylists = true;
-                        changeCount++;
                     }
                 }
+
                 return ctx.SaveChanges() == changeCount;
             }
         }
