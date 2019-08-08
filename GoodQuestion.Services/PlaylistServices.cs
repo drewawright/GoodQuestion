@@ -236,14 +236,35 @@ namespace GoodQuestion.Services
 
         public bool DeletePlaylistDb(string playlistId)
         {
+            int changeCount = 1;
             using (var ctx = new ApplicationDbContext())
             {
                 var entity = ctx
                     .Playlists
                     .Single(e => e.PlaylistId == playlistId);
-                ctx.Playlists.Remove(entity);
 
-                return ctx.SaveChanges() == 1;
+                List<string> songsToDelete = new List<string>();
+
+                foreach (var song in entity.Songs)
+                {
+                    if(song.Playlists.Count == 1)
+                    {
+                        songsToDelete.Add(song.SongId);
+                    }
+                }
+
+                foreach (var songId in songsToDelete)
+                {
+                    var songEntity = ctx
+                        .Songs
+                        .Single(se => se.SongId == songId);
+                        ctx.Songs.Remove(songEntity);
+                        changeCount = changeCount + 2;
+                }
+
+                ctx.Playlists.Remove(entity);
+                var actual = ctx.SaveChanges();
+                return actual == changeCount;
             }
         }
 
