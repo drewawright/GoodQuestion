@@ -12,7 +12,7 @@ namespace GoodQuestion.Services
     {
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
-            AccessToken = "BQDE7E7iywifbyeUfIlTvF7KmdphTs6TLpj_3YIcpMnSHfRx8Cd7HXJH6-Foimi695ja5OcIh-b8YLY52VjaObgWNWRkL__i7mHCuzBaq-XsJ92cFG4L9LFqIL6EskUnWINEE8jeeRwe0KQD9QN47JWygQBmMUM7NDDVX3oPUxMifwThib2X8rsX",
+            AccessToken = "BQAhpMgeapweSgRo6OtcHLaC0Kn2X-i_z0GOKzXE9Pma2E3c3k50d6iCw1YDH3qXcAb5JuL2TuI0so25ODAwVuS2wWIWYVAKrMGq9CUMCeq7B_2O59x5CgmC7xcljuiJwvrOn_TqRDPZDl4NPMEGQ72F1bixixsp6pchy5biNzfQBDocvfvJ27qh",
             TokenType = "Bearer"
         };
         private string _accountId = "chillpill9623";
@@ -154,23 +154,59 @@ namespace GoodQuestion.Services
             };
         }
 
-        private void GetSongAudioFeatures(Song song)
+        private void GetSongAudioFeatures(List<Song> songList)
         {
-            AudioFeatures features = _api.GetAudioFeatures(song.SongId);
+            var count = songList.Count();
 
-            song.DurationMs = features.DurationMs;
-            song.Danceability = features.Danceability;
-            song.Energy = features.Energy;
-            song.Key = features.Key;
-            song.Loudness = features.Loudness;
-            song.Mode = features.Mode;
-            song.Speechiness = features.Speechiness;
-            song.Acousticness = features.Acousticness;
-            song.Instrumentalness = features.Instrumentalness;
-            song.Liveness = features.Liveness;
-            song.Valence = features.Valence;
-            song.Tempo = features.Tempo;
-            song.HasAudioFeatures = true;
+            int loops = count / 100;
+
+            int remainder = count % 100;
+
+            if (count % 100 != 0)
+            {
+                loops++;
+            }
+
+            Dictionary<string, Song> songDict = songList.ToDictionary(s => s.SongId);
+
+            for (int i = 0; i < loops; i++)
+            {
+                List<Song> songFeaturesList;
+
+                if (i != loops - 1)
+                {
+                    songFeaturesList = songDict.Values.Skip(i * 100).Take(100).ToList();
+                }
+                else
+                {
+                    songFeaturesList = songDict.Values.Skip(i * 100).Take(remainder).ToList();
+                }
+
+                List<string> songIds = new List<string>();
+
+                foreach (var song in songFeaturesList)
+                {
+                    songIds.Add(song.SongId);
+                }
+
+                SeveralAudioFeatures features = _api.GetSeveralAudioFeatures(songIds);
+                foreach (var song in features.AudioFeatures)
+                {
+                    songDict[song.Id].DurationMs = song.DurationMs;
+                    songDict[song.Id].Danceability = song.Danceability;
+                    songDict[song.Id].Energy = song.Energy;
+                    songDict[song.Id].Key = song.Key;
+                    songDict[song.Id].Loudness = song.Loudness;
+                    songDict[song.Id].Mode = song.Mode;
+                    songDict[song.Id].Speechiness = song.Speechiness;
+                    songDict[song.Id].Acousticness = song.Acousticness;
+                    songDict[song.Id].Instrumentalness = song.Instrumentalness;
+                    songDict[song.Id].Liveness = song.Liveness;
+                    songDict[song.Id].Valence = song.Valence;
+                    songDict[song.Id].Tempo = song.Tempo;
+                    songDict[song.Id].HasAudioFeatures = true;
+                }
+            }
         }
 
         public bool GetSongsInPlaylist(string playlistId)
@@ -260,11 +296,10 @@ namespace GoodQuestion.Services
                     }
                 }
 
+                newSongs = newSongs.GroupBy(s => s.SongId).Select(s => s.First()).ToList();
+
                 //Get audio features for new songs
-                foreach (var song in newSongs)
-                {
-                    GetSongAudioFeatures(song);
-                }
+                GetSongAudioFeatures(newSongs);
 
                 foreach (Song song in newSongs)
                 {
