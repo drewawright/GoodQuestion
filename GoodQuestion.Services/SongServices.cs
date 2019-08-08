@@ -12,7 +12,7 @@ namespace GoodQuestion.Services
     {
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
-            AccessToken = "BQAxVv4iWm_4ylSx_8jbdG4EVWHM9CKxprf2JIuLqh63yUlczd6iNL_DgOFS62SRs5fFaKtWTDbGdlboQo_PS9bRrT5sLohRRj1XfzwAgpQLsRtxMInpcBAY5V3TkUy-MGQF9E8nE0ZUlmfcQHxgS2sWZGWJFsuZSqk0Q5rnNraR_uhlq5qqhl9TN2Koyx4riy0PJDi33PvZL_gIGNFFPbg__0oR7DjtYiICSpdWWxvL8lShmUGv5Gc1InNBhTllAygJZyJEI8bv-4ewe3ybYCPlSlAoODkP",
+            AccessToken = "BQDUWPX4-8OLfmiQ2otDj400sSG4-X2FhYDWH-xTRfnDzDGlh9NgrY4_-k-yHy7Lf6n2jNonnCcMW1TSq21T7yPQe-0iEyX7bFJSYWk2sZPR76r6iS8NWCsQvwckzbGoPDWwm4uivnGpwHIUf-raM1e_voXyer7WTs2_Tj9PVNF2lcPyyBw_QSHe",
             TokenType = "Bearer"
         };
         private string _accountId = "chillpill9623";
@@ -184,7 +184,7 @@ namespace GoodQuestion.Services
             {
                 playlist = new Playlist();
             }
-            
+
             var count = tracks.Total;
 
             if (count > 100)
@@ -211,18 +211,22 @@ namespace GoodQuestion.Services
 
             foreach (var track in tracks.Items)
             {
-                Song song = new Song
+                if (!track.IsLocal)
                 {
-                    Name = track.Track.Name,
-                    SongId = track.Track.Id,
-                    Artists = track.Track.Artists.First().Name,
-                    ImageUrl = track.Track.Album.Images[0].Url,
-                    PlayerUrl = track.Track.ExternUrls["spotify"],
-                    LastRefreshed = DateTime.Now,
-                    Playlists = new List<Playlist>()
-                };
 
-                songs.Add(song);
+                    Song song = new Song
+                    {
+                        Name = track.Track.Name,
+                        SongId = track.Track.Id,
+                        Artists = track.Track.Artists.First().Name,
+                        ImageUrl = track.Track.Album.Images[0].Url,
+                        PlayerUrl = track.Track.ExternUrls["spotify"],
+                        LastRefreshed = DateTime.Now,
+                        Playlists = new List<Playlist>()
+                    };
+
+                    songs.Add(song);
+                }
             }
 
             var newSongs = new List<Song>();
@@ -248,7 +252,7 @@ namespace GoodQuestion.Services
 
                 //Get audio features for new songs
                 foreach (var song in newSongs)
-                { 
+                {
                     GetSongAudioFeatures(song);
                 }
 
@@ -307,7 +311,7 @@ namespace GoodQuestion.Services
                     .Where(p => p.PlaylistId == playlistId)
                     .Single();
 
-                foreach(var song in entity.Songs)
+                foreach (var song in entity.Songs)
                 {
                     if (song.SongId == tracks.Items[loopCount].Track.Id)
                     {
