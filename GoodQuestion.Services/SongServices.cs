@@ -12,10 +12,10 @@ namespace GoodQuestion.Services
     {
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
-            AccessToken = "BQAhpMgeapweSgRo6OtcHLaC0Kn2X-i_z0GOKzXE9Pma2E3c3k50d6iCw1YDH3qXcAb5JuL2TuI0so25ODAwVuS2wWIWYVAKrMGq9CUMCeq7B_2O59x5CgmC7xcljuiJwvrOn_TqRDPZDl4NPMEGQ72F1bixixsp6pchy5biNzfQBDocvfvJ27qh",
+            AccessToken = "BQD4OS_DPbBHJEZFX2eSucuMA3XyoM7fLO9JxtC8ZtUpUbCVqvc_NkRZZDk89UJ1FzOPUxVt7hZVvuNlXWzaL_ikxH3ypdg_oME3FZzF7mLggtsMDK-SKEXuA_9xtK_wxA_F31aXnJmI8spyZqs5npB83dSOrj2GS37jRvswPrb3gXy9vka3cR8rX2GKsX6p3jKuX4LCqUHyUZ-zgstanR74h7MGLNlP5m_WONdzifBNh9qH9hixEdCiqrWotGlgS48022fe-Zr4egDM-uRYLbzV6584IQh5",
             TokenType = "Bearer"
         };
-        private string _accountId = "chillpill9623";
+        private string _accountId = "38vdur0tacvhr9wud418mvzqh";
 
         public bool CheckIfSongExists(string songId)
         {
