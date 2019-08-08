@@ -18,7 +18,7 @@ namespace GoodQuestion.Services
 
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
-            AccessToken = "BQBqTJQ_0ovfHkg3NFwj0TWxwvU8t7WoX05b8NMWo4OAm40ySJXTlEpNDM5u1XQq4N8_G0Rg8TpsVnjCdfodImpuicaALIv5WZIVc9eRHippgdRtGqQtJuqlfkW-DqFTwQRCDAMH6yfLuzgb0ZMbvJm5YXvNNv20ZjUF9CS-7Rst1X1RnseQ4WC__oUStuU_pVRL-RUXHjs9E82EMuxLr0g13jP_POCdycHj3I0MkZ0v0HfrjT1p3CK7J94zjQdxTfYygavZuWWfwtDKkdud",
+            AccessToken = "BQDUWPX4-8OLfmiQ2otDj400sSG4-X2FhYDWH-xTRfnDzDGlh9NgrY4_-k-yHy7Lf6n2jNonnCcMW1TSq21T7yPQe-0iEyX7bFJSYWk2sZPR76r6iS8NWCsQvwckzbGoPDWwm4uivnGpwHIUf-raM1e_voXyer7WTs2_Tj9PVNF2lcPyyBw_QSHe",
             TokenType = "Bearer"
         };
         private string _accountId = "chillpill9623";
