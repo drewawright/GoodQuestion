@@ -18,7 +18,7 @@ namespace GoodQuestion.Services
 
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
-            AccessToken = "BQDE7E7iywifbyeUfIlTvF7KmdphTs6TLpj_3YIcpMnSHfRx8Cd7HXJH6-Foimi695ja5OcIh-b8YLY52VjaObgWNWRkL__i7mHCuzBaq-XsJ92cFG4L9LFqIL6EskUnWINEE8jeeRwe0KQD9QN47JWygQBmMUM7NDDVX3oPUxMifwThib2X8rsX",
+            AccessToken = "BQAhpMgeapweSgRo6OtcHLaC0Kn2X-i_z0GOKzXE9Pma2E3c3k50d6iCw1YDH3qXcAb5JuL2TuI0so25ODAwVuS2wWIWYVAKrMGq9CUMCeq7B_2O59x5CgmC7xcljuiJwvrOn_TqRDPZDl4NPMEGQ72F1bixixsp6pchy5biNzfQBDocvfvJ27qh",
             TokenType = "Bearer"
         };
         private string _accountId = "38vdur0tacvhr9wud418mvzqh";
