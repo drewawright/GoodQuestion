@@ -111,12 +111,16 @@ namespace GoodQuestion.Services
         {
             using (var ctx = new ApplicationDbContext())
             {
+                if (CheckIfSongExists(songId))
+                {
                 var entity = ctx
                     .Songs
                     .Single(e => e.SongId == songId);
                 ctx.Songs.Remove(entity);
 
                 return ctx.SaveChanges() == 1;
+                }
+                return false;
             }
         }
 
