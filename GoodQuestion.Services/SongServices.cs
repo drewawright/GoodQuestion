@@ -311,8 +311,7 @@ namespace GoodQuestion.Services
                 }
                 query.HasSongs = true;
                 int actual = db.SaveChanges();
-                int altChangeCount = changeCount + 1;
-                if (actual == changeCount || actual == altChangeCount)
+                if (actual == changeCount || actual == changeCount + 1)
                 {
                     return true;
                 }
