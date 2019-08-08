@@ -18,7 +18,7 @@ namespace GoodQuestion.Services
 
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
-            AccessToken = "BQDUWPX4-8OLfmiQ2otDj400sSG4-X2FhYDWH-xTRfnDzDGlh9NgrY4_-k-yHy7Lf6n2jNonnCcMW1TSq21T7yPQe-0iEyX7bFJSYWk2sZPR76r6iS8NWCsQvwckzbGoPDWwm4uivnGpwHIUf-raM1e_voXyer7WTs2_Tj9PVNF2lcPyyBw_QSHe",
+            AccessToken = "BQC-8hHxERlW5Q-cJYu21H7p1N1ejrAW_8axCcP8yLY02LJLnFnUJ8aUzslcGIycD3WXm9EvA4W9P5dtSXykJ23laTNC_U0OvtLnFrmMa7ZPXfJYdZCb36YKwddW1BjHtTOG3fJOWxsYjI-UXeZX2v3vx0aDXaGaDUZ_cTS_8HH3Hrcr4GRoRvcvitUi--1A1Hk89AkoKaUmZcC-r47KeuzU-56WWaK9a83PghSn5BlAeLQrNMk4pxDBCulJW3t0LCY2qIcwiB4elhBcKCHPAkdYyCChImQM",
             TokenType = "Bearer"
         };
         private string _accountId = "38vdur0tacvhr9wud418mvzqh";
@@ -94,19 +94,19 @@ namespace GoodQuestion.Services
         public bool GetAllUserPlaylistsSpotify(string spotifyId)
         {
             List<Playlist> playlistsToAdd = new List<Playlist>();
-            var playlists = _api.GetUserPlaylists(spotifyId);
+            var playlists = _api.GetUserPlaylists(spotifyId, 50, 0);
             var count = playlists.Total;
-            if (count > 20)
+            if (count > 50)
             {
-                var loops = count / 20;
-                if (count % 20 != 0)
+                var loops = count / 50;
+                if (count % 50 != 0)
                 {
                     loops++;
                 }
                 for (int i = 1; i < loops; i++)
                 {
-                    var offset = i * 20;
-                    var additionalPlaylists = _api.GetUserPlaylists(spotifyId, 20, offset);
+                    var offset = i * 50;
+                    var additionalPlaylists = _api.GetUserPlaylists(spotifyId, 50, offset);
                     foreach (var playlist in additionalPlaylists.Items)
                     {
                         playlists.Items.Add(playlist);
