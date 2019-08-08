@@ -228,6 +228,8 @@ namespace GoodQuestion.Services
                         Playlists = new List<Playlist>()
                     };
 
+                    // GetSongAudioFeatures(song);
+
                     if (track.Track.Album.Images.Count != 0)
                     {
                         song.ImageUrl = track.Track.Album.Images[0].Url;
@@ -271,7 +273,8 @@ namespace GoodQuestion.Services
                 }
                 query.HasSongs = true;
                 int actual = db.SaveChanges();
-                if (actual == changeCount || actual == changeCount++)
+                int altChangeCount = changeCount + 1;
+                if (actual == changeCount || actual == altChangeCount)
                 {
                     return true;
                 }
