@@ -17,6 +17,7 @@ namespace GoodQuestion.WebAPI.Models
     public class ManageInfoViewModel
     {
         public string LocalLoginProvider { get; set; }
+        public string Name { get; set; }
 
         public string Email { get; set; }
 

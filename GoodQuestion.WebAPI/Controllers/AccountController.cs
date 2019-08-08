@@ -16,6 +16,7 @@ using Microsoft.Owin.Security.OAuth;
 using GoodQuestion.WebAPI.Models;
 using GoodQuestion.WebAPI.Providers;
 using GoodQuestion.WebAPI.Results;
+using GoodQuestion.Data;
 
 namespace GoodQuestion.WebAPI.Controllers
 {
@@ -328,7 +329,7 @@ namespace GoodQuestion.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = new ApplicationUser() { UserName = model.Email, Email = model.Email };
+            var user = new ApplicationUser() { UserName = model.Name, Email = model.Email };
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
 
