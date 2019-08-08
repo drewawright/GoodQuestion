@@ -94,19 +94,19 @@ namespace GoodQuestion.Services
         public bool GetAllUserPlaylistsSpotify(string spotifyId)
         {
             List<Playlist> playlistsToAdd = new List<Playlist>();
-            var playlists = _api.GetUserPlaylists(spotifyId);
+            var playlists = _api.GetUserPlaylists(spotifyId, 50, 0);
             var count = playlists.Total;
-            if (count > 20)
+            if (count > 50)
             {
-                var loops = count / 20;
-                if (count % 20 != 0)
+                var loops = count / 50;
+                if (count % 50 != 0)
                 {
                     loops++;
                 }
                 for (int i = 1; i < loops; i++)
                 {
-                    var offset = i * 20;
-                    var additionalPlaylists = _api.GetUserPlaylists(spotifyId, 20, offset);
+                    var offset = i * 50;
+                    var additionalPlaylists = _api.GetUserPlaylists(spotifyId, 50, offset);
                     foreach (var playlist in additionalPlaylists.Items)
                     {
                         playlists.Items.Add(playlist);
@@ -133,16 +133,25 @@ namespace GoodQuestion.Services
                 var query = ctx
                     .Users
                     .Single(u => u.Id == _userId.ToString());
+
                 foreach (Playlist playlist in playlistsToAdd)
                 {
+                    var queryPlaylist = ctx
+                        .Playlists
+                        .Where(u => u.PlaylistId == playlist.PlaylistId)
+                        .SingleOrDefault();
+
                     if (!CheckIfPlaylistExists(playlist.PlaylistId))
                     {
                         ctx.Playlists.Add(playlist);
                         changeCount++;
                     }
 
-                    query.Playlists.Add(playlist);
-                    changeCount++;
+                    if (!query.Playlists.Contains(queryPlaylist))
+                    {
+                        query.Playlists.Add(playlist);
+                        changeCount++;
+                    }
 
                     if (changeCount >= 1)
                     {
