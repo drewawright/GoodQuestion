@@ -69,6 +69,7 @@ namespace GoodQuestion.Services
                     Name = query.Name,
                     SongId = query.SongId,
                     Artists = query.Artists,
+                    AlbumName = query.AlbumName,
                     ImageUrl = query.ImageUrl,
                     PlayerUrl = query.PlayerUrl,
                     DurationMs = query.DurationMs,
@@ -142,6 +143,7 @@ namespace GoodQuestion.Services
                         Name = song.Name,
                         SongId = song.SongId,
                         Artists = song.Artists,
+                        AlbumName = song.AlbumName,
                         ImageUrl = song.ImageUrl,
                         PlayerUrl = song.PlayerUrl,
                         DurationMs = song.DurationMs,
@@ -259,6 +261,7 @@ namespace GoodQuestion.Services
                         Name = track.Track.Name,
                         SongId = track.Track.Id,
                         Artists = track.Track.Artists.First().Name,
+                        AlbumName = track.Track.Album.Name,
                         PlayerUrl = track.Track.ExternUrls["spotify"],
                         LastRefreshed = DateTime.Now,
                         Playlists = new List<Playlist>()
