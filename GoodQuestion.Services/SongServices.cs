@@ -12,10 +12,10 @@ namespace GoodQuestion.Services
     {
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
-            AccessToken = "BQDxfetqVlIunDCuihLXhXmdkyzlPbBoLO2Yw3EbZzTzI-XL3yj00puTMjbu9hGGpZYiJrJHWJBMxMvsrbSDlP0FdY7WvQ6qOUTcbbyQqF4g_3-9O15snmYiLriPkOifNIOpq9C3YTzqNa3WQjsOle-Gez0ZIv_CHYHTcn1dr95P5q0vsYGeNKG1PEMm2ygImbQolmaABo8u4COQQjOoX2IYRb5xwWxFfcdLpEEthZhMHFe4kI7S_QK7FIXS8GUXXacqlNzlNFRHEYACEu_J",
+            AccessToken = "BQD4OS_DPbBHJEZFX2eSucuMA3XyoM7fLO9JxtC8ZtUpUbCVqvc_NkRZZDk89UJ1FzOPUxVt7hZVvuNlXWzaL_ikxH3ypdg_oME3FZzF7mLggtsMDK-SKEXuA_9xtK_wxA_F31aXnJmI8spyZqs5npB83dSOrj2GS37jRvswPrb3gXy9vka3cR8rX2GKsX6p3jKuX4LCqUHyUZ-zgstanR74h7MGLNlP5m_WONdzifBNh9qH9hixEdCiqrWotGlgS48022fe-Zr4egDM-uRYLbzV6584IQh5",
             TokenType = "Bearer"
         };
-        private string _accountId = "chillpill9623";
+        private string _accountId = "38vdur0tacvhr9wud418mvzqh";
 
         public bool CheckIfSongExists(string songId)
         {
@@ -112,12 +112,16 @@ namespace GoodQuestion.Services
         {
             using (var ctx = new ApplicationDbContext())
             {
+                if (CheckIfSongExists(songId))
+                {
                 var entity = ctx
                     .Songs
                     .Single(e => e.SongId == songId);
                 ctx.Songs.Remove(entity);
 
                 return ctx.SaveChanges() == 1;
+                }
+                return false;
             }
         }
 
@@ -263,6 +267,8 @@ namespace GoodQuestion.Services
                         Playlists = new List<Playlist>()
                     };
 
+                    // GetSongAudioFeatures(song);
+
                     if (track.Track.Album.Images.Count != 0)
                     {
                         song.ImageUrl = track.Track.Album.Images[0].Url;
@@ -305,7 +311,7 @@ namespace GoodQuestion.Services
                 }
                 query.HasSongs = true;
                 int actual = db.SaveChanges();
-                if (actual == changeCount || actual == changeCount +1 )
+                if (actual == changeCount || actual == changeCount + 1)
                 {
                     return true;
                 }
