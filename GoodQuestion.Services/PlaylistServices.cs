@@ -133,16 +133,25 @@ namespace GoodQuestion.Services
                 var query = ctx
                     .Users
                     .Single(u => u.Id == _userId.ToString());
+
                 foreach (Playlist playlist in playlistsToAdd)
                 {
+                    var queryPlaylist = ctx
+                        .Playlists
+                        .Where(u => u.PlaylistId == playlist.PlaylistId)
+                        .SingleOrDefault();
+
                     if (!CheckIfPlaylistExists(playlist.PlaylistId))
                     {
                         ctx.Playlists.Add(playlist);
                         changeCount++;
                     }
 
-                    query.Playlists.Add(playlist);
-                    changeCount++;
+                    if (!query.Playlists.Contains(queryPlaylist))
+                    {
+                        query.Playlists.Add(playlist);
+                        changeCount++;
+                    }
 
                     if (changeCount >= 1)
                     {
