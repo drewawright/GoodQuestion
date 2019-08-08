@@ -12,7 +12,7 @@ namespace GoodQuestion.Services
     {
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
-            AccessToken = "BQAhpMgeapweSgRo6OtcHLaC0Kn2X-i_z0GOKzXE9Pma2E3c3k50d6iCw1YDH3qXcAb5JuL2TuI0so25ODAwVuS2wWIWYVAKrMGq9CUMCeq7B_2O59x5CgmC7xcljuiJwvrOn_TqRDPZDl4NPMEGQ72F1bixixsp6pchy5biNzfQBDocvfvJ27qh",
+            AccessToken = "BQDxfetqVlIunDCuihLXhXmdkyzlPbBoLO2Yw3EbZzTzI-XL3yj00puTMjbu9hGGpZYiJrJHWJBMxMvsrbSDlP0FdY7WvQ6qOUTcbbyQqF4g_3-9O15snmYiLriPkOifNIOpq9C3YTzqNa3WQjsOle-Gez0ZIv_CHYHTcn1dr95P5q0vsYGeNKG1PEMm2ygImbQolmaABo8u4COQQjOoX2IYRb5xwWxFfcdLpEEthZhMHFe4kI7S_QK7FIXS8GUXXacqlNzlNFRHEYACEu_J",
             TokenType = "Bearer"
         };
         private string _accountId = "chillpill9623";
@@ -302,7 +302,7 @@ namespace GoodQuestion.Services
                 }
                 query.HasSongs = true;
                 int actual = db.SaveChanges();
-                if (actual == changeCount || actual == changeCount++)
+                if (actual == changeCount || actual == changeCount +1 )
                 {
                     return true;
                 }
