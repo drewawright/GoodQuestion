@@ -12,7 +12,7 @@ namespace GoodQuestion.Services
     {
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
-            AccessToken = "BQB7FyIj2RuHA1CkoUhCQCD8AYCBYyLDk3HIZ1pjVK18MtcIooNFkp-vc-HE4cDHjRN27hv0nN61yHIUWlgUZiClplurHGV26wAG0s091IYt4LsGETt48A2vNk14UAS-898zeXuqmP08GBbTcH52lrdI6dTliKPxBW8M5BGq2Whvpke__rWMKlbAIeZHrnb7JhljF1NKrhmchT39gpNo3hj0BAivL4F2lAl4OsYBhKUEYY5v0QZCRHWdWcStOHBeHtxUVb7anzus9KBqK9Qx",
+            AccessToken = "BQDE7E7iywifbyeUfIlTvF7KmdphTs6TLpj_3YIcpMnSHfRx8Cd7HXJH6-Foimi695ja5OcIh-b8YLY52VjaObgWNWRkL__i7mHCuzBaq-XsJ92cFG4L9LFqIL6EskUnWINEE8jeeRwe0KQD9QN47JWygQBmMUM7NDDVX3oPUxMifwThib2X8rsX",
             TokenType = "Bearer"
         };
         private string _accountId = "chillpill9623";
@@ -215,7 +215,7 @@ namespace GoodQuestion.Services
 
             foreach (var track in tracks.Items)
             {
-                if (!track.IsLocal)
+                if (!track.IsLocal && track.Track.Name != null)
                 {
 
                     Song song = new Song
@@ -223,11 +223,15 @@ namespace GoodQuestion.Services
                         Name = track.Track.Name,
                         SongId = track.Track.Id,
                         Artists = track.Track.Artists.First().Name,
-                        ImageUrl = track.Track.Album.Images[0].Url,
                         PlayerUrl = track.Track.ExternUrls["spotify"],
                         LastRefreshed = DateTime.Now,
                         Playlists = new List<Playlist>()
                     };
+
+                    if (track.Track.Album.Images.Count != 0)
+                    {
+                        song.ImageUrl = track.Track.Album.Images[0].Url;
+                    }
 
                     songs.Add(song);
                 }

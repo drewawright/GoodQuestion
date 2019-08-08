@@ -18,7 +18,7 @@ namespace GoodQuestion.Services
 
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
-            AccessToken = "BQB7FyIj2RuHA1CkoUhCQCD8AYCBYyLDk3HIZ1pjVK18MtcIooNFkp-vc-HE4cDHjRN27hv0nN61yHIUWlgUZiClplurHGV26wAG0s091IYt4LsGETt48A2vNk14UAS-898zeXuqmP08GBbTcH52lrdI6dTliKPxBW8M5BGq2Whvpke__rWMKlbAIeZHrnb7JhljF1NKrhmchT39gpNo3hj0BAivL4F2lAl4OsYBhKUEYY5v0QZCRHWdWcStOHBeHtxUVb7anzus9KBqK9Qx",
+            AccessToken = "BQDE7E7iywifbyeUfIlTvF7KmdphTs6TLpj_3YIcpMnSHfRx8Cd7HXJH6-Foimi695ja5OcIh-b8YLY52VjaObgWNWRkL__i7mHCuzBaq-XsJ92cFG4L9LFqIL6EskUnWINEE8jeeRwe0KQD9QN47JWygQBmMUM7NDDVX3oPUxMifwThib2X8rsX",
             TokenType = "Bearer"
         };
         private string _accountId = "38vdur0tacvhr9wud418mvzqh";
@@ -152,6 +152,12 @@ namespace GoodQuestion.Services
                         query.Playlists.Add(playlist);
                         changeCount++;
                     }
+                    else
+                    {
+                        var oldPlaylist = query.Playlists.FirstOrDefault(p => p.PlaylistId == playlist.PlaylistId);
+                        if (oldPlaylist != null) oldPlaylist = playlist;
+                        changeCount ++;
+                    }
 
                     if (changeCount >= 1)
                     {
@@ -159,7 +165,9 @@ namespace GoodQuestion.Services
                     }
                 }
 
-                return ctx.SaveChanges() == changeCount;
+                int actual = ctx.SaveChanges();
+
+                return actual == changeCount;
             }
         }
 
@@ -236,14 +244,35 @@ namespace GoodQuestion.Services
 
         public bool DeletePlaylistDb(string playlistId)
         {
+            int changeCount = 1;
             using (var ctx = new ApplicationDbContext())
             {
                 var entity = ctx
                     .Playlists
                     .Single(e => e.PlaylistId == playlistId);
-                ctx.Playlists.Remove(entity);
 
-                return ctx.SaveChanges() == 1;
+                List<string> songsToDelete = new List<string>();
+
+                foreach (var song in entity.Songs)
+                {
+                    if(song.Playlists.Count == 1)
+                    {
+                        songsToDelete.Add(song.SongId);
+                    }
+                }
+
+                foreach (var songId in songsToDelete)
+                {
+                    var songEntity = ctx
+                        .Songs
+                        .Single(se => se.SongId == songId);
+                        ctx.Songs.Remove(songEntity);
+                        changeCount = changeCount + 2;
+                }
+
+                ctx.Playlists.Remove(entity);
+                var actual = ctx.SaveChanges();
+                return actual == changeCount;
             }
         }
 
