@@ -83,6 +83,10 @@
     <Compile Include="Migrations\201908081755021_addedAlbumsToSongs.Designer.cs">
       <DependentUpon>201908081755021_addedAlbumsToSongs.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201908081900244_changedUserAudioFeatureCalculations.cs" />
+    <Compile Include="Migrations\201908081900244_changedUserAudioFeatureCalculations.Designer.cs">
+      <DependentUpon>201908081900244_changedUserAudioFeatureCalculations.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Playlist.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -101,6 +105,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201908081755021_addedAlbumsToSongs.resx">
       <DependentUpon>201908081755021_addedAlbumsToSongs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908081900244_changedUserAudioFeatureCalculations.resx">
+      <DependentUpon>201908081900244_changedUserAudioFeatureCalculations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
