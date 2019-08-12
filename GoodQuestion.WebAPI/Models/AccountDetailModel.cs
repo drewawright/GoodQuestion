@@ -7,7 +7,7 @@ namespace GoodQuestion.WebAPI.Models
 {
     public class AccountDetailModel
     {
-        public string Name { get; set; }
+        public string UserName { get; set; }
         public string Id { get; set; }
         public bool HasPlaylists { get; set; }
         public float Danceability { get; set; }
