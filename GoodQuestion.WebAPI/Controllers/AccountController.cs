@@ -61,7 +61,7 @@ namespace GoodQuestion.WebAPI.Controllers
 
             return new UserInfoViewModel
             {
-                Email = User.Identity.GetUserName(),
+                UserName = User.Identity.GetUserName(),
                 HasRegistered = externalLogin == null,
                 LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
             };
@@ -228,6 +228,8 @@ namespace GoodQuestion.WebAPI.Controllers
         [Route("ExternalLogin", Name = "ExternalLogin")]
         public async Task<IHttpActionResult> GetExternalLogin(string provider, string error = null)
         {
+            string redirectUri = string.Empty;
+
             if (error != null)
             {
                 return Redirect(Url.Content("~/") + "#error=" + Uri.EscapeDataString(error));
@@ -275,7 +277,12 @@ namespace GoodQuestion.WebAPI.Controllers
                 Authentication.SignIn(identity);
             }
 
-            return Ok();
+            redirectUri = string.Format($"https://accounts.spotify.com/authorize?client_id={0}&redirect_uri=https%3A%2F%2Fmusicqeary.azurewebsites.net&scope={1}&response_type=code&state=44347",
+                Startup.spotifyAuthOptions.ClientId,
+                Startup.spotifyAuthOptions.Scope
+                );
+
+            return Redirect(redirectUri);
         }
 
         // GET api/Account/ExternalLogins?returnUrl=%2F&generateState=true
@@ -329,7 +336,7 @@ namespace GoodQuestion.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = new ApplicationUser() { UserName = model.Name, Email = model.Email };
+            var user = new ApplicationUser() { UserName = model.UserName, Email = model.Email };
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
 

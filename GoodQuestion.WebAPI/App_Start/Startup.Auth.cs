@@ -12,29 +12,41 @@ using GoodQuestion.WebAPI.Providers;
 using GoodQuestion.WebAPI.Models;
 using Owin.Security.Providers.Spotify;
 using GoodQuestion.Data;
+using SpotifyAPI.Web.Auth;
 
 namespace GoodQuestion.WebAPI
 {
     public partial class Startup
     {
         public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
+        public static OAuthBearerAuthenticationOptions OAuthBearerOptions { get; private set; }
+        public static SpotifyAuthenticationOptions spotifyAuthOptions { get; private set; }
+
+        public void ConfigureOAuth(IAppBuilder app)
+        {
+            app.UseExternalSignInCookie(Microsoft.AspNet.Identity.DefaultAuthenticationTypes.ExternalCookie);
+            OAuthBearerOptions = new OAuthBearerAuthenticationOptions();
+        }
 
         public static string PublicClientId { get; private set; }
-
         // For more information on configuring authentication, please visit https://go.microsoft.com/fwlink/?LinkId=301864
+
         public void ConfigureAuth(IAppBuilder app)
         {
             // Configure the db context and user manager to use a single instance per request
             app.CreatePerOwinContext(ApplicationDbContext.Create);
+
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
 
             // Enable the application to use a cookie to store information for the signed in user
             // and to use a cookie to temporarily store information about a user logging in with a third party login provider
             app.UseCookieAuthentication(new CookieAuthenticationOptions());
+
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 
             // Configure the application for OAuth based flow
             PublicClientId = "self";
+
             OAuthOptions = new OAuthAuthorizationServerOptions
             {
                 TokenEndpointPath = new PathString("/Token"),
@@ -48,11 +60,11 @@ namespace GoodQuestion.WebAPI
             // Enable the application to use bearer tokens to authenticate users
             app.UseOAuthBearerTokens(OAuthOptions);
 
-
-            var options = new SpotifyAuthenticationOptions()
+            spotifyAuthOptions = new SpotifyAuthenticationOptions
             {
                 ClientId = "e9c39d5ff5104708b844be98e1ef108c",
-                ClientSecret = "5bc1dc56fdc04a7d986861511f0abdaf"
+                ClientSecret = "5bc1dc56fdc04a7d986861511f0abdaf",
+                Provider = new SpotifyAuthProvider()
             };
 
             var permissions = new List<string>
@@ -62,25 +74,21 @@ namespace GoodQuestion.WebAPI
 
             foreach (var permission in permissions)
             {
-                options.Scope.Add(permission);
+                spotifyAuthOptions.Scope.Add(permission);
             }
 
-
-            app.UseSpotifyAuthentication(options);
+            app.UseSpotifyAuthentication(spotifyAuthOptions);
 
             // Uncomment the following lines to enable logging in with third party login providers
             //app.UseMicrosoftAccountAuthentication(
             //    clientId: "",
             //    clientSecret: "");
-
             //app.UseTwitterAuthentication(
             //    consumerKey: "",
             //    consumerSecret: "");
-
             //app.UseFacebookAuthentication(
             //    appId: "",
             //    appSecret: "");
-
             //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             //{
             //    ClientId = "",

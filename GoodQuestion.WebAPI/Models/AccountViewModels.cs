@@ -5,6 +5,12 @@ namespace GoodQuestion.WebAPI.Models
 {
     // Models returned by AccountController actions.
 
+    public class ParsedExternalAccessToken
+    {
+        public string user_id { get; set; }
+        public string app_id { get; set; }
+    }
+
     public class ExternalLoginViewModel
     {
         public string Name { get; set; }
@@ -28,11 +34,13 @@ namespace GoodQuestion.WebAPI.Models
 
     public class UserInfoViewModel
     {
-        public string Email { get; set; }
+        public string UserName { get; set; }
 
         public bool HasRegistered { get; set; }
 
         public string LoginProvider { get; set; }
+
+        public string SpotifyUserId { get; set; }
     }
 
     public class UserLoginInfoViewModel

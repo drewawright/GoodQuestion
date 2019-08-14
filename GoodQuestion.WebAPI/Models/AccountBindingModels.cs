@@ -38,7 +38,7 @@ namespace GoodQuestion.WebAPI.Models
         [Required]
         [Display(Name = "User Name")]
         [StringLength(50, ErrorMessage = "User name must be between 4 and 50 characters long.", MinimumLength = 4)]
-        public string Name { get; set; }
+        public string UserName { get; set; }
 
         [Required]
         [Display(Name = "Email")]
