@@ -226,14 +226,14 @@ namespace GoodQuestion.WebAPI.Controllers
         [HostAuthentication(DefaultAuthenticationTypes.ExternalCookie)]
         [AllowAnonymous]
         [Route("ExternalLogin", Name = "ExternalLogin")]
-        public async Task<IHttpActionResult> GetExternalLogin(string provider)
+        public async Task<IHttpActionResult> GetExternalLogin(string provider, string error = null)
         {
             string redirectUri = string.Empty;
 
-            //if (error != null)
-            //{
-            //    return Redirect(Url.Content("~/") + "#error=" + Uri.EscapeDataString(error));
-            //}
+            if (error != null)
+            {
+                return Redirect(Url.Content("~/") + "#error=" + Uri.EscapeDataString(error));
+            }
 
             if (!User.Identity.IsAuthenticated)
             {
