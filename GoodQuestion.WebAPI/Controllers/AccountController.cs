@@ -226,12 +226,14 @@ namespace GoodQuestion.WebAPI.Controllers
         [HostAuthentication(DefaultAuthenticationTypes.ExternalCookie)]
         [AllowAnonymous]
         [Route("ExternalLogin", Name = "ExternalLogin")]
-        public async Task<IHttpActionResult> GetExternalLogin(string provider, string error = null)
+        public async Task<IHttpActionResult> GetExternalLogin(string provider)
         {
-            if (error != null)
-            {
-                return Redirect(Url.Content("~/") + "#error=" + Uri.EscapeDataString(error));
-            }
+            string redirectUri = string.Empty;
+
+            //if (error != null)
+            //{
+            //    return Redirect(Url.Content("~/") + "#error=" + Uri.EscapeDataString(error));
+            //}
 
             if (!User.Identity.IsAuthenticated)
             {
@@ -275,7 +277,12 @@ namespace GoodQuestion.WebAPI.Controllers
                 Authentication.SignIn(identity);
             }
 
-            return Ok();
+            redirectUri = string.Format($"https://accounts.spotify.com/authorize?client_id={0}&redirect_uri=https%3A%2F%2Fmusicqeary.azurewebsites.net&scope={1}&response_type=code&state=44347",
+                Startup.spotifyAuthOptions.ClientId,
+                Startup.spotifyAuthOptions.Scope
+                );
+
+            return Redirect(redirectUri);
         }
 
         // GET api/Account/ExternalLogins?returnUrl=%2F&generateState=true

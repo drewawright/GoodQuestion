@@ -5,6 +5,12 @@ namespace GoodQuestion.WebAPI.Models
 {
     // Models returned by AccountController actions.
 
+    public class ParsedExternalAccessToken
+    {
+        public string user_id { get; set; }
+        public string app_id { get; set; }
+    }
+
     public class ExternalLoginViewModel
     {
         public string Name { get; set; }
