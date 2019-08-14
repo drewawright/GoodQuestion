@@ -63,6 +63,7 @@ namespace GoodQuestion.WebAPI
             spotifyAuthOptions = new SpotifyAuthenticationOptions
             {
                 ClientId = "e9c39d5ff5104708b844be98e1ef108c",
+                ClientSecret = "5bc1dc56fdc04a7d986861511f0abdaf",
                 Provider = new SpotifyAuthProvider()
             };
 
@@ -75,6 +76,8 @@ namespace GoodQuestion.WebAPI
             {
                 spotifyAuthOptions.Scope.Add(permission);
             }
+
+            app.UseSpotifyAuthentication(spotifyAuthOptions);
 
             // Uncomment the following lines to enable logging in with third party login providers
             //app.UseMicrosoftAccountAuthentication(
