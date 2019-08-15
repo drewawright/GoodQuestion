@@ -302,8 +302,8 @@ namespace GoodQuestion.WebAPI.Controllers
             List<KeyValuePair<string, string>> body = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("grant_type","authorization_code"),
-                new KeyValuePair<string, string>("code",code),
-                new KeyValuePair<string, string>("redirect_uri","http%3A%2F%2Flocalhost%3A4200%2Fcallback%2F")
+                new KeyValuePair<string, string>("code", code),
+                new KeyValuePair<string, string>("redirect_uri","http://localhost:4200/callback/")
 
             };
             HttpContent content = new FormUrlEncodedContent(body);
