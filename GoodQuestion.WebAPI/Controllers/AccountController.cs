@@ -21,6 +21,8 @@ using Newtonsoft.Json;
 using SpotifyAPI.Web.Models;
 using SpotifyAPI.Web.Auth;
 using SpotifyAPI.Web;
+using GoodQuestion.Services;
+using System.Linq;
 
 namespace GoodQuestion.WebAPI.Controllers
 {
@@ -445,6 +447,71 @@ namespace GoodQuestion.WebAPI.Controllers
             if (!result.Succeeded)
             {
                 return GetErrorResult(result); 
+            }
+            return Ok();
+        }
+
+        public async Task<string> RefreshToken(string refreshToken)
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", "Basic ZTljMzlkNWZmNTEwNDcwOGI4NDRiZTk4ZTFlZjEwOGM6NWJjMWRjNTZmZGMwNGE3ZDk4Njg2MTUxMWYwYWJkYWY=");
+            List<KeyValuePair<string, string>> body = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("grant_type","refresh_token"),
+                new KeyValuePair<string, string>("refresh_token", refreshToken)
+            };
+            HttpContent content = new FormUrlEncodedContent(body);
+            HttpResponseMessage resp = await client.PostAsync("https://accounts.spotify.com/api/token", content);
+            string msg = await resp.Content.ReadAsStringAsync();
+            Token token = JsonConvert.DeserializeObject<Token>(msg);
+            if (token.HasError())
+            {
+                return msg;
+            }
+            else return token.AccessToken;
+        }
+
+        [Authorize(Roles ="Admin")]
+        [Route("BigWipe")]
+        public IHttpActionResult BigWipe()
+        {
+            SongServices songService = new SongServices();
+            songService.DeleteTable();
+
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            PlaylistServices playlistServices = new PlaylistServices(userId);
+            playlistServices.DeleteTable();
+            using (var ctx = new ApplicationDbContext())
+            {
+                ctx.Database.ExecuteSqlCommand("UPDATE ApplicationUser SET HasPlaylists = 0");
+                ctx.SaveChanges();
+            }
+            return Ok();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [Route("BiggestWipe")]
+        public IHttpActionResult BiggestWipe()
+        {
+            SongServices songService = new SongServices();
+            songService.DeleteTable();
+
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            PlaylistServices playlistServices = new PlaylistServices(userId);
+            playlistServices.DeleteTable();
+            using (var ctx = new ApplicationDbContext())
+            {
+                ctx.Database.ExecuteSqlCommand("UPDATE ApplicationUser SET HasPlaylists = 0");
+
+                var entity = ctx
+                    .Users
+                    .Where(e => e.Id.ToString() != "e266462d-910a-46f2-bc21-ad55791ce1a7");
+
+                foreach(var user in entity)
+                {
+                    ctx.Users.Remove(user);
+                }
+                ctx.SaveChanges();
             }
             return Ok();
         }
