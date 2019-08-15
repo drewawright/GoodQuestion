@@ -298,7 +298,7 @@ namespace GoodQuestion.WebAPI.Controllers
 
         [AllowAnonymous]
         [Route("CompleteRegister")]
-        public async Task<IHttpActionResult> CompleteRegister(string code)
+        public async Task<IHttpActionResult> CompleteRegister(string code, string password)
         {
             var client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", "Basic ZTljMzlkNWZmNTEwNDcwOGI4NDRiZTk4ZTFlZjEwOGM6NWJjMWRjNTZmZGMwNGE3ZDk4Njg2MTUxMWYwYWJkYWY=");
@@ -339,7 +339,7 @@ namespace GoodQuestion.WebAPI.Controllers
                 SpotifyAuthToken = token.AccessToken, SpotifyRefreshToken = token.RefreshToken,
                 SpotifyUserId = profile.Id, TokenExpiration = DateTime.Now.AddHours(1) };
 
-            IdentityResult result = await UserManager.CreateAsync(user);
+            IdentityResult result = await UserManager.CreateAsync(user, password);
             if (!result.Succeeded)
             {
                 return GetErrorResult(result);
