@@ -303,11 +303,11 @@ namespace GoodQuestion.WebAPI.Controllers
             {
                 new KeyValuePair<string, string>("grant_type","authorization_code"),
                 new KeyValuePair<string, string>("code",code),
-                new KeyValuePair<string, string>("redirect_uri","http%3A%2F%2Flocalhost%3A4200%2Fcallback")
+                new KeyValuePair<string, string>("redirect_uri","http%3A%2F%2Flocalhost%3A4200%2Fcallback%2F")
 
             };
             HttpContent content = new FormUrlEncodedContent(body);
-            HttpResponseMessage resp = await client.PostAsync("https://accounts.spotify.com/api/token",content);
+            HttpResponseMessage resp = await client.PostAsync("https://accounts.spotify.com/api/token", content);
             string msg = await resp.Content.ReadAsStringAsync();
             JsonConvert.DeserializeObject<Token>(msg);
 
