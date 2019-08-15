@@ -17,6 +17,8 @@ using GoodQuestion.WebAPI.Models;
 using GoodQuestion.WebAPI.Providers;
 using GoodQuestion.WebAPI.Results;
 using GoodQuestion.Data;
+using Newtonsoft.Json;
+using SpotifyAPI.Web.Models;
 
 namespace GoodQuestion.WebAPI.Controllers
 {
@@ -277,12 +279,33 @@ namespace GoodQuestion.WebAPI.Controllers
                 Authentication.SignIn(identity);
             }
 
-            redirectUri = string.Format($"https://accounts.spotify.com/authorize?client_id={0}&redirect_uri=https%3A%2F%2Fmusicqeary.azurewebsites.net&scope={1}&response_type=code&state=44347",
+            redirectUri = string.Format("https://accounts.spotify.com/authorize?client_id={0}&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Fcallback&scope={1}&response_type=code",
                 Startup.spotifyAuthOptions.ClientId,
                 Startup.spotifyAuthOptions.Scope
                 );
 
             return Redirect(redirectUri);
+        }
+
+        [AllowAnonymous]
+        [Route("CompleteRegister")]
+        public async Task<IHttpActionResult> CompleteRegister(string code)
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", "Basic ZTljMzlkNWZmNTEwNDcwOGI4NDRiZTk4ZTFlZjEwOGM6NWJjMWRjNTZmZGMwNGE3ZDk4Njg2MTUxMWYwYWJkYWY=");
+            List<KeyValuePair<string, string>> body = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("grant_type","authorization_code"),
+                new KeyValuePair<string, string>("code",code),
+                new KeyValuePair<string, string>("redirect_uri","http%3A%2F%2Flocalhost%3A4200%2Fcallback")
+
+            };
+            HttpContent content = new FormUrlEncodedContent(body);
+            HttpResponseMessage resp = await client.PostAsync("https://accounts.spotify.com/api/token",content);
+            string msg = await resp.Content.ReadAsStringAsync();
+            JsonConvert.DeserializeObject<Token>(msg);
+
+            return Ok();
         }
 
         // GET api/Account/ExternalLogins?returnUrl=%2F&generateState=true
