@@ -20,6 +20,7 @@ using GoodQuestion.Data;
 using Newtonsoft.Json;
 using SpotifyAPI.Web.Models;
 using SpotifyAPI.Web.Auth;
+using SpotifyAPI.Web;
 
 namespace GoodQuestion.WebAPI.Controllers
 {
@@ -316,10 +317,40 @@ namespace GoodQuestion.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            else
+
+            SpotifyWebAPI api = new SpotifyWebAPI
             {
-                return Ok();
+                AccessToken = token.AccessToken,
+                TokenType = "Bearer"
+            };
+
+            var profile = api.GetPrivateProfile();
+            string email;
+            if (profile.Email != null)
+            {
+                email = profile.Email;
+            }else
+            {
+                email = "timmy@timmytown.com";
             }
+
+
+            var user = new ApplicationUser() { UserName = profile.DisplayName, Email = email,
+                SpotifyAuthToken = token.AccessToken, SpotifyRefreshToken = token.RefreshToken,
+                SpotifyUserId = profile.Id, TokenExpiration = DateTime.Now.AddHours(1) };
+
+            IdentityResult result = await UserManager.CreateAsync(user);
+            if (!result.Succeeded)
+            {
+                return GetErrorResult(result);
+            }
+
+            /*result = await UserManager.AddLoginAsync(user.Id, info.Login);
+            if (!result.Succeeded)
+            {
+                return GetErrorResult(result);
+            }*/
+                return Ok();
         }
 
         // GET api/Account/ExternalLogins?returnUrl=%2F&generateState=true
