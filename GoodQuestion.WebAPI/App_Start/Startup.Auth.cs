@@ -70,7 +70,7 @@ namespace GoodQuestion.WebAPI
 
             var permissions = new List<string>
             {
-                "user-read-recently-played", "user-top-read", "playlist-read-collaborative", "playlist-modify-private", "playlist-modify-public", "playlist-read-private", "streaming"
+                "user-read-recently-played", "user-top-read", "playlist-read-collaborative", "playlist-read-private", "streaming"
             };
 
             foreach (var permission in permissions)
