@@ -279,9 +279,15 @@ namespace GoodQuestion.WebAPI.Controllers
                 Authentication.SignIn(identity);
             }
 
-            redirectUri = string.Format("https://accounts.spotify.com/authorize?client_id={0}&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Fcallback&scope={1}&response_type=code",
+            redirectUri = string.Format("https://accounts.spotify.com/authorize?client_id={0}&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Fcallback%2F&scope={1}%20{2}%20{3}%20{4}%20{5}%20{6}&response_type=code&state=44347",
                 Startup.spotifyAuthOptions.ClientId,
-                Startup.spotifyAuthOptions.Scope
+                Startup.spotifyAuthOptions.Scope[0],
+                Startup.spotifyAuthOptions.Scope[1],
+                Startup.spotifyAuthOptions.Scope[2],
+                Startup.spotifyAuthOptions.Scope[3],
+                Startup.spotifyAuthOptions.Scope[4],
+                Startup.spotifyAuthOptions.Scope[5],
+                Startup.spotifyAuthOptions.Scope[6]
                 );
 
             return Redirect(redirectUri);
