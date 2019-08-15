@@ -388,5 +388,15 @@ namespace GoodQuestion.Services
                 return db.SaveChanges() == 1;
             }
         }
+
+        public bool DeleteTable()
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                ctx.Database.ExecuteSqlCommand("DELETE FROM [Playlist]");
+                ctx.SaveChanges();
+            }
+            return true;
+        }
     }
 }
