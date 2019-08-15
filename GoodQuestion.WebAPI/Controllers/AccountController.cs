@@ -481,10 +481,9 @@ namespace GoodQuestion.WebAPI.Controllers
         [Route("BigWipe")]
         public IHttpActionResult BigWipe()
         {
-            SongServices songService = new SongServices();
-            songService.DeleteTable();
-
             var userId = Guid.Parse(User.Identity.GetUserId());
+            SongServices songService = new SongServices(userId);
+            songService.DeleteTable();
             PlaylistServices playlistServices = new PlaylistServices(userId);
             playlistServices.DeleteTable();
             using (var ctx = new ApplicationDbContext())
@@ -499,10 +498,9 @@ namespace GoodQuestion.WebAPI.Controllers
         [Route("BiggestWipe")]
         public IHttpActionResult BiggestWipe()
         {
-            SongServices songService = new SongServices();
-            songService.DeleteTable();
-
             var userId = Guid.Parse(User.Identity.GetUserId());
+            SongServices songService = new SongServices(userId);
+            songService.DeleteTable();
             PlaylistServices playlistServices = new PlaylistServices(userId);
             playlistServices.DeleteTable();
             using (var ctx = new ApplicationDbContext())

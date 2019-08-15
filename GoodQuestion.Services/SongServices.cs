@@ -36,8 +36,6 @@ namespace GoodQuestion.Services
             }
         }
 
-        private string _accountId = "38vdur0tacvhr9wud418mvzqh";
-
         public bool CheckIfSongExists(string songId)
         {
             using (var ctx = new ApplicationDbContext())

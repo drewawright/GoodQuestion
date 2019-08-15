@@ -36,9 +36,6 @@ namespace GoodQuestion.Services
                 _spotifyId = entity.SpotifyUserId;
             }
         }
-
-        private string _accountId = "38vdur0tacvhr9wud418mvzqh";
-
         private bool CheckUserHasPlaylists()
         {
             using (var ctx = new ApplicationDbContext())
