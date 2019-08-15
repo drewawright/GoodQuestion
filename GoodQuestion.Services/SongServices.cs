@@ -10,11 +10,32 @@ namespace GoodQuestion.Services
 {
     public class SongServices
     {
+        private readonly Guid _userId;
+
+        public SongServices(Guid userId)
+        {
+            _userId = userId;
+        }
+
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
-            AccessToken = "BQD4OS_DPbBHJEZFX2eSucuMA3XyoM7fLO9JxtC8ZtUpUbCVqvc_NkRZZDk89UJ1FzOPUxVt7hZVvuNlXWzaL_ikxH3ypdg_oME3FZzF7mLggtsMDK-SKEXuA_9xtK_wxA_F31aXnJmI8spyZqs5npB83dSOrj2GS37jRvswPrb3gXy9vka3cR8rX2GKsX6p3jKuX4LCqUHyUZ-zgstanR74h7MGLNlP5m_WONdzifBNh9qH9hixEdCiqrWotGlgS48022fe-Zr4egDM-uRYLbzV6584IQh5",
             TokenType = "Bearer"
         };
+
+        public void SetToken()
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity =
+                    ctx
+                    .Users
+                    .Where(u => u.Id == _userId.ToString())
+                    .Single();
+
+                _api.AccessToken = entity.SpotifyAuthToken;
+            }
+        }
+
         private string _accountId = "38vdur0tacvhr9wud418mvzqh";
 
         public bool CheckIfSongExists(string songId)

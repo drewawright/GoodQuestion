@@ -335,9 +335,15 @@ namespace GoodQuestion.WebAPI.Controllers
             }
 
 
-            var user = new ApplicationUser() { UserName = profile.DisplayName, Email = email,
-                SpotifyAuthToken = token.AccessToken, SpotifyRefreshToken = token.RefreshToken,
-                SpotifyUserId = profile.Id, TokenExpiration = DateTime.Now.AddHours(1) };
+            var user = new ApplicationUser()
+            {
+                UserName = profile.DisplayName,
+                Email = email,
+                SpotifyAuthToken = token.AccessToken,
+                SpotifyRefreshToken = token.RefreshToken,
+                SpotifyUserId = profile.Id,
+                TokenExpiration = DateTime.Now.AddHours(1)
+            };
 
             IdentityResult result = await UserManager.CreateAsync(user);
             if (!result.Succeeded)

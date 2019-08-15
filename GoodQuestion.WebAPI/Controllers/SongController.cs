@@ -1,4 +1,5 @@
 ﻿using GoodQuestion.Services;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,8 +65,9 @@ namespace GoodQuestion.WebAPI.Controllers
 
         private SongServices CreateSongServices()
         {
-            
-            var songService = new SongServices();
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            var songService = new SongServices(userId);
+            songService.SetToken();
             return songService;
         }
 

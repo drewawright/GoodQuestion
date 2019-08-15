@@ -78,6 +78,7 @@ namespace GoodQuestion.WebAPI.Controllers
         {
             var userId = Guid.Parse(User.Identity.GetUserId());
             var playlistServices = new PlaylistServices(userId);
+            playlistServices.SetToken();
             return playlistServices;
         }
     }
