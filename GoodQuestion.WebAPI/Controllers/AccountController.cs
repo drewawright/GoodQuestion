@@ -19,6 +19,7 @@ using GoodQuestion.WebAPI.Results;
 using GoodQuestion.Data;
 using Newtonsoft.Json;
 using SpotifyAPI.Web.Models;
+using SpotifyAPI.Web.Auth;
 
 namespace GoodQuestion.WebAPI.Controllers
 {
@@ -26,6 +27,7 @@ namespace GoodQuestion.WebAPI.Controllers
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
+
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
 
@@ -304,14 +306,20 @@ namespace GoodQuestion.WebAPI.Controllers
                 new KeyValuePair<string, string>("grant_type","authorization_code"),
                 new KeyValuePair<string, string>("code", code),
                 new KeyValuePair<string, string>("redirect_uri","http://localhost:4200/callback/")
-
             };
             HttpContent content = new FormUrlEncodedContent(body);
             HttpResponseMessage resp = await client.PostAsync("https://accounts.spotify.com/api/token", content);
             string msg = await resp.Content.ReadAsStringAsync();
-            JsonConvert.DeserializeObject<Token>(msg);
+            Token token = JsonConvert.DeserializeObject<Token>(msg);
 
-            return Ok();
+            if (token.HasError())
+            {
+                return BadRequest();
+            }
+            else
+            {
+                return Ok();
+            }
         }
 
         // GET api/Account/ExternalLogins?returnUrl=%2F&generateState=true
