@@ -17,8 +17,12 @@ using GoodQuestion.WebAPI.Models;
 using GoodQuestion.WebAPI.Providers;
 using GoodQuestion.WebAPI.Results;
 using GoodQuestion.Data;
-using SpotifyAPI.Web;
+using Newtonsoft.Json;
+using SpotifyAPI.Web.Models;
 using SpotifyAPI.Web.Auth;
+using SpotifyAPI.Web;
+using GoodQuestion.Services;
+using System.Linq;
 
 namespace GoodQuestion.WebAPI.Controllers
 {
@@ -26,6 +30,7 @@ namespace GoodQuestion.WebAPI.Controllers
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
+
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
 
@@ -293,6 +298,69 @@ namespace GoodQuestion.WebAPI.Controllers
             return Redirect(redirectUri);
         }
 
+        [AllowAnonymous]
+        [Route("CompleteRegister")]
+        public async Task<IHttpActionResult> CompleteRegister(string code, string password)
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", "Basic ZTljMzlkNWZmNTEwNDcwOGI4NDRiZTk4ZTFlZjEwOGM6NWJjMWRjNTZmZGMwNGE3ZDk4Njg2MTUxMWYwYWJkYWY=");
+            List<KeyValuePair<string, string>> body = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("grant_type","authorization_code"),
+                new KeyValuePair<string, string>("code", code),
+                new KeyValuePair<string, string>("redirect_uri","http://localhost:4200/callback/")
+            };
+            HttpContent content = new FormUrlEncodedContent(body);
+            HttpResponseMessage resp = await client.PostAsync("https://accounts.spotify.com/api/token", content);
+            string msg = await resp.Content.ReadAsStringAsync();
+            Token token = JsonConvert.DeserializeObject<Token>(msg);
+
+            if (token.HasError())
+            {
+                return BadRequest();
+            }
+
+            SpotifyWebAPI api = new SpotifyWebAPI
+            {
+                AccessToken = token.AccessToken,
+                TokenType = "Bearer"
+            };
+
+            var profile = api.GetPrivateProfile();
+            string email;
+            if (profile.Email != null)
+            {
+                email = profile.Email;
+            }else
+            {
+                email = "timmy@timmytown.com";
+            }
+
+
+            var user = new ApplicationUser()
+            {
+                UserName = profile.DisplayName,
+                Email = email,
+                SpotifyAuthToken = token.AccessToken,
+                SpotifyRefreshToken = token.RefreshToken,
+                SpotifyUserId = profile.Id,
+                TokenExpiration = DateTime.Now.AddHours(1)
+            };
+
+            IdentityResult result = await UserManager.CreateAsync(user, password);
+            if (!result.Succeeded)
+            {
+                return GetErrorResult(result);
+            }
+
+            /*result = await UserManager.AddLoginAsync(user.Id, info.Login);
+            if (!result.Succeeded)
+            {
+                return GetErrorResult(result);
+            }*/
+                return Ok();
+        }
+
         // GET api/Account/ExternalLogins?returnUrl=%2F&generateState=true
         [AllowAnonymous]
         [Route("ExternalLogins")]
@@ -385,6 +453,69 @@ namespace GoodQuestion.WebAPI.Controllers
             if (!result.Succeeded)
             {
                 return GetErrorResult(result); 
+            }
+            return Ok();
+        }
+
+        public async Task<string> RefreshToken(string refreshToken)
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", "Basic ZTljMzlkNWZmNTEwNDcwOGI4NDRiZTk4ZTFlZjEwOGM6NWJjMWRjNTZmZGMwNGE3ZDk4Njg2MTUxMWYwYWJkYWY=");
+            List<KeyValuePair<string, string>> body = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("grant_type","refresh_token"),
+                new KeyValuePair<string, string>("refresh_token", refreshToken)
+            };
+            HttpContent content = new FormUrlEncodedContent(body);
+            HttpResponseMessage resp = await client.PostAsync("https://accounts.spotify.com/api/token", content);
+            string msg = await resp.Content.ReadAsStringAsync();
+            Token token = JsonConvert.DeserializeObject<Token>(msg);
+            if (token.HasError())
+            {
+                return msg;
+            }
+            else return token.AccessToken;
+        }
+
+        [Authorize(Roles ="Admin")]
+        [Route("BigWipe")]
+        public IHttpActionResult BigWipe()
+        {
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            SongServices songService = new SongServices(userId);
+            songService.DeleteTable();
+            PlaylistServices playlistServices = new PlaylistServices(userId);
+            playlistServices.DeleteTable();
+            using (var ctx = new ApplicationDbContext())
+            {
+                ctx.Database.ExecuteSqlCommand("UPDATE ApplicationUser SET HasPlaylists = 0");
+                ctx.SaveChanges();
+            }
+            return Ok();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [Route("BiggestWipe")]
+        public IHttpActionResult BiggestWipe()
+        {
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            SongServices songService = new SongServices(userId);
+            songService.DeleteTable();
+            PlaylistServices playlistServices = new PlaylistServices(userId);
+            playlistServices.DeleteTable();
+            using (var ctx = new ApplicationDbContext())
+            {
+                ctx.Database.ExecuteSqlCommand("UPDATE ApplicationUser SET HasPlaylists = 0");
+
+                var entity = ctx
+                    .Users
+                    .Where(e => e.Id.ToString() != "e266462d-910a-46f2-bc21-ad55791ce1a7");
+
+                foreach(var user in entity)
+                {
+                    ctx.Users.Remove(user);
+                }
+                ctx.SaveChanges();
             }
             return Ok();
         }

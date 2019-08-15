@@ -46,10 +46,10 @@ namespace GoodQuestion.WebAPI.Controllers
 
         // GET api/Playlist/GetAllUserPlaylists
         [Route("{spotifyId}")]
-        public IHttpActionResult GetAllUserPlaylistsSpotify(string spotifyId)
+        public IHttpActionResult GetAllUserPlaylistsSpotify()
         {
             var svc = CreatePlaylistServices();
-            var playlists = svc.GetAllUserPlaylistsSpotify(spotifyId);
+            var playlists = svc.GetAllUserPlaylistsSpotify();
 
             return Ok(playlists);
         }
@@ -78,6 +78,7 @@ namespace GoodQuestion.WebAPI.Controllers
         {
             var userId = Guid.Parse(User.Identity.GetUserId());
             var playlistServices = new PlaylistServices(userId);
+            playlistServices.SetToken();
             return playlistServices;
         }
     }

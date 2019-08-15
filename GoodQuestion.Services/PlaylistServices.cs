@@ -10,6 +10,7 @@ namespace GoodQuestion.Services
     public class PlaylistServices
     {
         private readonly Guid _userId;
+        private string _spotifyId;
 
         public PlaylistServices(Guid userId)
         {
@@ -18,11 +19,23 @@ namespace GoodQuestion.Services
 
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
-            AccessToken = "BQD4OS_DPbBHJEZFX2eSucuMA3XyoM7fLO9JxtC8ZtUpUbCVqvc_NkRZZDk89UJ1FzOPUxVt7hZVvuNlXWzaL_ikxH3ypdg_oME3FZzF7mLggtsMDK-SKEXuA_9xtK_wxA_F31aXnJmI8spyZqs5npB83dSOrj2GS37jRvswPrb3gXy9vka3cR8rX2GKsX6p3jKuX4LCqUHyUZ-zgstanR74h7MGLNlP5m_WONdzifBNh9qH9hixEdCiqrWotGlgS48022fe-Zr4egDM-uRYLbzV6584IQh5",
             TokenType = "Bearer"
         };
-        private string _accountId = "38vdur0tacvhr9wud418mvzqh";
 
+        public void SetToken()
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity =
+                    ctx
+                    .Users
+                    .Where(u => u.Id == _userId.ToString())
+                    .Single();
+
+                _api.AccessToken = entity.SpotifyAuthToken;
+                _spotifyId = entity.SpotifyUserId;
+            }
+        }
         private bool CheckUserHasPlaylists()
         {
             using (var ctx = new ApplicationDbContext())
@@ -91,10 +104,10 @@ namespace GoodQuestion.Services
             }
         }
 
-        public bool GetAllUserPlaylistsSpotify(string spotifyId)
+        public bool GetAllUserPlaylistsSpotify()
         {
             List<Playlist> playlistsToAdd = new List<Playlist>();
-            var playlists = _api.GetUserPlaylists(spotifyId, 50, 0);
+            var playlists = _api.GetUserPlaylists(_spotifyId, 50, 0);
             var count = playlists.Total;
             if (count > 50)
             {
@@ -106,7 +119,7 @@ namespace GoodQuestion.Services
                 for (int i = 1; i < loops; i++)
                 {
                     var offset = i * 50;
-                    var additionalPlaylists = _api.GetUserPlaylists(spotifyId, 50, offset);
+                    var additionalPlaylists = _api.GetUserPlaylists(_spotifyId, 50, offset);
                     foreach (var playlist in additionalPlaylists.Items)
                     {
                         playlists.Items.Add(playlist);
@@ -371,6 +384,16 @@ namespace GoodQuestion.Services
 
                 return db.SaveChanges() == 1;
             }
+        }
+
+        public bool DeleteTable()
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                ctx.Database.ExecuteSqlCommand("DELETE FROM [Playlist]");
+                ctx.SaveChanges();
+            }
+            return true;
         }
     }
 }
