@@ -17,6 +17,8 @@ using GoodQuestion.WebAPI.Models;
 using GoodQuestion.WebAPI.Providers;
 using GoodQuestion.WebAPI.Results;
 using GoodQuestion.Data;
+using SpotifyAPI.Web;
+using SpotifyAPI.Web.Auth;
 
 namespace GoodQuestion.WebAPI.Controllers
 {
@@ -277,16 +279,16 @@ namespace GoodQuestion.WebAPI.Controllers
                 Authentication.SignIn(identity);
             }
 
-            redirectUri = string.Format("https://accounts.spotify.com/authorize?client_id={0}&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Fcallback%2F&scope={1}%20{2}%20{3}%20{4}%20{5}%20{6}&response_type=code&state=44347",
+            redirectUri = string.Format("https://accounts.spotify.com/authorize?client_id={0}&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Fcallback%2F&scope={1}%20{2}%20{3}%20{4}&response_type=code&state=44347",
                 Startup.spotifyAuthOptions.ClientId,
                 Startup.spotifyAuthOptions.Scope[0],
                 Startup.spotifyAuthOptions.Scope[1],
                 Startup.spotifyAuthOptions.Scope[2],
                 Startup.spotifyAuthOptions.Scope[3],
-                Startup.spotifyAuthOptions.Scope[4],
-                Startup.spotifyAuthOptions.Scope[5],
-                Startup.spotifyAuthOptions.Scope[6]
+                Startup.spotifyAuthOptions.Scope[4]
                 );
+
+            
 
             return Redirect(redirectUri);
         }
@@ -439,6 +441,7 @@ namespace GoodQuestion.WebAPI.Controllers
             public string LoginProvider { get; set; }
             public string ProviderKey { get; set; }
             public string UserName { get; set; }
+            public string ExternalAccessToken { get; set; }
 
             public IList<Claim> GetClaims()
             {
@@ -477,7 +480,8 @@ namespace GoodQuestion.WebAPI.Controllers
                 {
                     LoginProvider = providerKeyClaim.Issuer,
                     ProviderKey = providerKeyClaim.Value,
-                    UserName = identity.FindFirstValue(ClaimTypes.Name)
+                    UserName = identity.FindFirstValue(ClaimTypes.Name),
+                    ExternalAccessToken = identity.FindFirstValue("ExternalAccessToken"),
                 };
             }
         }
