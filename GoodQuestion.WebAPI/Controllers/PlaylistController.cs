@@ -46,7 +46,7 @@ namespace GoodQuestion.WebAPI.Controllers
         }
 
         // GET api/Playlist/GetAllUserPlaylists
-        [Route("{spotifyId}")]
+        [Route("Spotify")]
         public IHttpActionResult GetAllUserPlaylistsSpotify()
         {
             var svc = CreatePlaylistServices();
