@@ -20,7 +20,7 @@ namespace GoodQuestion.Data
         public string SpotifyAuthToken { get; set; }
         public string SpotifyRefreshToken { get; set; }
         public bool HasPlaylists { get; set; }
-        public DateTime TokenExpiration { get; set; }
+        public DateTime? TokenExpiration { get; set; }
         public float Danceability
         {
             get

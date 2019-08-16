@@ -91,6 +91,10 @@
     <Compile Include="Migrations\201908151744229_TokenExpiration.Designer.cs">
       <DependentUpon>201908151744229_TokenExpiration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201908152057340_dateTimeNullable.cs" />
+    <Compile Include="Migrations\201908152057340_dateTimeNullable.Designer.cs">
+      <DependentUpon>201908152057340_dateTimeNullable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Playlist.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -115,6 +119,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201908151744229_TokenExpiration.resx">
       <DependentUpon>201908151744229_TokenExpiration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201908152057340_dateTimeNullable.resx">
+      <DependentUpon>201908152057340_dateTimeNullable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
