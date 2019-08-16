@@ -64,14 +64,6 @@ namespace GoodQuestion.WebAPI.Controllers
             return Ok();
         }
 
-        [Route("UserSongs")]
-        public IHttpActionResult GetUserSongs()
-        {
-            var svc = CreateSongServices();
-            svc.GetAllUserSongs();
-            return Ok();
-        }
-
         private SongServices CreateSongServices()
         {
             var userId = Guid.Parse(User.Identity.GetUserId());
