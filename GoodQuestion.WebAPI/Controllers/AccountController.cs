@@ -366,7 +366,7 @@ namespace GoodQuestion.WebAPI.Controllers
                 email = profile.Email;
             }else
             {
-                email = "timmy@timmytown.com";
+                email = profile.Id + "@musicqeary.com";
             }
 
 
