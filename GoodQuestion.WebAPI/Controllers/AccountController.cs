@@ -23,6 +23,7 @@ using SpotifyAPI.Web.Auth;
 using SpotifyAPI.Web;
 using GoodQuestion.Services;
 using System.Linq;
+using GoodQuestion.Models;
 
 namespace GoodQuestion.WebAPI.Controllers
 {
@@ -72,6 +73,38 @@ namespace GoodQuestion.WebAPI.Controllers
                 HasRegistered = externalLogin == null,
                 LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
             };
+        }
+
+        //GET api/Account/UserAudioData
+        [Route("UserAudioData")]
+        public IHttpActionResult GetUserAudioData()
+        {
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity = ctx.Users
+                    .Where(e => e.Id == userId.ToString())
+                    .Single();
+
+                var userData = new UserAudioData
+                {
+                    UserName = entity.UserName,
+                    Danceability = entity.Danceability,
+                    Energy = entity.Energy,
+                    Key = entity.Key,
+                    Loudness = entity.Loudness,
+                    Mode = entity.Mode,
+                    Speechiness = entity.Speechiness,
+                    Acousticness = entity.Acousticness,
+                    Instrumentalness = entity.Instrumentalness,
+                    Liveness = entity.Liveness,
+                    Valence = entity.Valence,
+                    Tempo = entity.Tempo,
+                    Duration_ms = entity.Duration_ms,
+                };
+
+                return Ok(userData);
+            }
         }
 
         // POST api/Account/Logout
