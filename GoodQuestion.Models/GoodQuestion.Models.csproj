@@ -54,6 +54,7 @@
     <Compile Include="Song\SongDetail.cs" />
     <Compile Include="Song\SongEdit.cs" />
     <Compile Include="Song\SongIndex.cs" />
+    <Compile Include="UserAudioData.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GoodQuestion.Data\GoodQuestion.Data.csproj">
