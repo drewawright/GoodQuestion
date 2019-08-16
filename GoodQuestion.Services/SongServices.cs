@@ -230,6 +230,22 @@ namespace GoodQuestion.Services
             }
         }
 
+        public void GetAllUserSongs()
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var query =
+                    ctx
+                    .Users
+                    .Where(u => u.Id == _userId.ToString())
+                    .Single();
+                foreach (var playlist in query.Playlists)
+                {
+                    GetSongsInPlaylist(playlist.PlaylistId);
+                }
+            }
+        }
+
         public bool GetSongsInPlaylist(string playlistId)
         {
             List<Song> songs = new List<Song>();
