@@ -385,12 +385,6 @@ namespace GoodQuestion.WebAPI.Controllers
             {
                 return GetErrorResult(result);
             }
-
-            /*result = await UserManager.AddLoginAsync(user.Id, info.Login);
-            if (!result.Succeeded)
-            {
-                return GetErrorResult(result);
-            }*/
                 return Ok();
         }
 
