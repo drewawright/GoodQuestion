@@ -182,6 +182,10 @@ namespace GoodQuestion.Services
             int loops = count / 100;
 
             int remainder = count % 100;
+            if(count == 100)
+            {
+                remainder = 100;
+            }
 
             if (count % 100 != 0)
             {

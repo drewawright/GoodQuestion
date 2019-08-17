@@ -106,9 +106,9 @@ namespace GoodQuestion.Services
 
         public bool GetAllUserPlaylistsSpotify()
         {
-            List<Playlist> playlistsToAdd = new List<Playlist>();
-            var playlists = _api.GetUserPlaylists(_spotifyId, 50, 0);
-            var count = playlists.Total;
+            List<Playlist> userPlaylists = new List<Playlist>();
+            var playlistsSpotify = _api.GetUserPlaylists(_spotifyId, 50, 0);
+            var count = playlistsSpotify.Total;
             if (count > 50)
             {
                 var loops = count / 50;
@@ -122,11 +122,11 @@ namespace GoodQuestion.Services
                     var additionalPlaylists = _api.GetUserPlaylists(_spotifyId, 50, offset);
                     foreach (var playlist in additionalPlaylists.Items)
                     {
-                        playlists.Items.Add(playlist);
+                        playlistsSpotify.Items.Add(playlist);
                     }
                 }
             }
-            foreach (var playlist in playlists.Items)
+            foreach (var playlist in playlistsSpotify.Items)
             {
                 Playlist userPlaylist = new Playlist
                 {
@@ -138,43 +138,52 @@ namespace GoodQuestion.Services
                     LastRefreshed = DateTime.Now,
                     LastSyncedWithSpotify = DateTime.Now
                 };
-                playlistsToAdd.Add(userPlaylist);
+                userPlaylists.Add(userPlaylist);
             }
+            //var newPlaylists = new List<Playlist>();
             var changeCount = 0;
             using (var ctx = new ApplicationDbContext())
             {
-                var query = ctx
+                var userQuery = ctx
                     .Users
                     .Single(u => u.Id == _userId.ToString());
 
-                foreach (Playlist playlist in playlistsToAdd)
+                foreach (Playlist playlist in userPlaylists)
                 {
-                    var queryPlaylist = ctx
+                    try
+                    {
+                        var playlistQuery = ctx
                         .Playlists
-                        .Where(u => u.PlaylistId == playlist.PlaylistId)
-                        .SingleOrDefault();
+                        .Single(e => e.PlaylistId == playlist.PlaylistId);
 
-                    if (!CheckIfPlaylistExists(playlist.PlaylistId))
+                        //playlistQuery = playlist;
+                        changeCount++;
+                        if (!userQuery.Playlists.Contains(playlistQuery))
+                        {
+                            userQuery.Playlists.Add(playlistQuery);
+                            changeCount++;
+                        }
+
+                        //return true;
+                    }
+                    catch (InvalidOperationException)
                     {
                         ctx.Playlists.Add(playlist);
+                        userQuery.Playlists.Add(playlist);
+                        changeCount++;
                         changeCount++;
                     }
-
-                    if (!query.Playlists.Contains(queryPlaylist))
+                    catch (ArgumentNullException)
                     {
-                        query.Playlists.Add(playlist);
+                        ctx.Playlists.Add(playlist);
+                        userQuery.Playlists.Add(playlist);
                         changeCount++;
-                    }
-                    else
-                    {
-                        var oldPlaylist = query.Playlists.FirstOrDefault(p => p.PlaylistId == playlist.PlaylistId);
-                        if (oldPlaylist != null) oldPlaylist = playlist;
-                        changeCount ++;
+                        changeCount++;
                     }
 
                     if (changeCount >= 1)
                     {
-                        query.HasPlaylists = true;
+                        userQuery.HasPlaylists = true;
                     }
                 }
 
