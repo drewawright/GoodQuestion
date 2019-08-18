@@ -330,11 +330,21 @@ namespace GoodQuestion.Services
                 //Add playlist to all songs, add new songs to list of new songs
                 foreach (var track in songs)
                 {
-
-                    track.Playlists.Add(query);
                     if (!CheckIfSongExists(track.SongId))
                     {
                         newSongs.Add(track);
+                        track.Playlists.Add(query);
+                    }
+                    else
+                    {
+                        var querySong =
+                            db
+                            .Songs
+                            .Where(s => s.SongId == track.SongId)
+                            .Single();
+
+
+                        querySong.Playlists.Add(query);
                     }
                 }
 
