@@ -167,6 +167,17 @@ namespace GoodQuestion.Services
                         PlayerUrl = song.PlayerUrl,
                         DurationMs = song.DurationMs,
                         LastRefreshed = song.LastRefreshed,
+                        Danceability = song.Danceability,
+                        Energy = song.Energy,
+                        Key = song.Key,
+                        Loudness = song.Loudness,
+                        Mode = song.Mode,
+                        Speechiness = song.Speechiness,
+                        Acousticness = song.Acousticness,
+                        Instrumentalness = song.Instrumentalness,
+                        Liveness = song.Liveness,
+                        Valence = song.Valence,
+                        Tempo = song.Tempo
                     };
                     songIndex.Add(songItem);
                 }
