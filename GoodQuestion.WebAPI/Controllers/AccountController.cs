@@ -536,7 +536,7 @@ namespace GoodQuestion.WebAPI.Controllers
 
                 var entity = ctx
                     .Users
-                    .Where(e => e.Id.ToString() != "e266462d-910a-46f2-bc21-ad55791ce1a7");
+                    .Where(e => e.UserName != "spicyAdmin");
 
                 foreach(var user in entity)
                 {
