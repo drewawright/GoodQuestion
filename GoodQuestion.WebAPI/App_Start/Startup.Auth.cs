@@ -64,12 +64,13 @@ namespace GoodQuestion.WebAPI
             {
                 ClientId = "e9c39d5ff5104708b844be98e1ef108c",
                 ClientSecret = "5bc1dc56fdc04a7d986861511f0abdaf",
-                Provider = new SpotifyAuthProvider()
+                Provider = new SpotifyAuthProvider(),
+                CallbackPath = new PathString("/callback/"),
             };
 
             var permissions = new List<string>
             {
-                "user-read-recently-played", "user-top-read", "playlist-read-collaborative", "playlist-modify-private", "playlist-modify-public", "playlist-read-private", "streaming"
+                "user-read-recently-played", "user-top-read", "playlist-read-collaborative", "playlist-read-private", "streaming"
             };
 
             foreach (var permission in permissions)

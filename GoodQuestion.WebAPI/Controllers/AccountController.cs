@@ -17,6 +17,13 @@ using GoodQuestion.WebAPI.Models;
 using GoodQuestion.WebAPI.Providers;
 using GoodQuestion.WebAPI.Results;
 using GoodQuestion.Data;
+using Newtonsoft.Json;
+using SpotifyAPI.Web.Models;
+using SpotifyAPI.Web.Auth;
+using SpotifyAPI.Web;
+using GoodQuestion.Services;
+using System.Linq;
+using GoodQuestion.Models;
 
 namespace GoodQuestion.WebAPI.Controllers
 {
@@ -24,6 +31,7 @@ namespace GoodQuestion.WebAPI.Controllers
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
+
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
 
@@ -65,6 +73,38 @@ namespace GoodQuestion.WebAPI.Controllers
                 HasRegistered = externalLogin == null,
                 LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
             };
+        }
+
+        //GET api/Account/UserAudioData
+        [Route("UserAudioData")]
+        public IHttpActionResult GetUserAudioData()
+        {
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity = ctx.Users
+                    .Where(e => e.Id == userId.ToString())
+                    .Single();
+
+                var userData = new UserAudioData
+                {
+                    UserName = entity.UserName,
+                    Danceability = entity.Danceability,
+                    Energy = entity.Energy,
+                    Key = entity.Key,
+                    Loudness = entity.Loudness,
+                    Mode = entity.Mode,
+                    Speechiness = entity.Speechiness,
+                    Acousticness = entity.Acousticness,
+                    Instrumentalness = entity.Instrumentalness,
+                    Liveness = entity.Liveness,
+                    Valence = entity.Valence,
+                    Tempo = entity.Tempo,
+                    Duration_ms = entity.Duration_ms,
+                };
+
+                return Ok(userData);
+            }
         }
 
         // POST api/Account/Logout
@@ -277,12 +317,75 @@ namespace GoodQuestion.WebAPI.Controllers
                 Authentication.SignIn(identity);
             }
 
-            redirectUri = string.Format($"https://accounts.spotify.com/authorize?client_id={0}&redirect_uri=https%3A%2F%2Fmusicqeary.azurewebsites.net&scope={1}&response_type=code&state=44347",
+            redirectUri = string.Format("https://accounts.spotify.com/authorize?client_id={0}&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Fcallback%2F&scope={1}%20{2}%20{3}%20{4}&response_type=code&state=44347",
                 Startup.spotifyAuthOptions.ClientId,
-                Startup.spotifyAuthOptions.Scope
+                Startup.spotifyAuthOptions.Scope[0],
+                Startup.spotifyAuthOptions.Scope[1],
+                Startup.spotifyAuthOptions.Scope[2],
+                Startup.spotifyAuthOptions.Scope[3],
+                Startup.spotifyAuthOptions.Scope[4]
                 );
 
+            
+
             return Redirect(redirectUri);
+        }
+
+        [AllowAnonymous]
+        [Route("CompleteRegister")]
+        public async Task<IHttpActionResult> CompleteRegister(string code, string password)
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", "Basic ZTljMzlkNWZmNTEwNDcwOGI4NDRiZTk4ZTFlZjEwOGM6NWJjMWRjNTZmZGMwNGE3ZDk4Njg2MTUxMWYwYWJkYWY=");
+            List<KeyValuePair<string, string>> body = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("grant_type","authorization_code"),
+                new KeyValuePair<string, string>("code", code),
+                new KeyValuePair<string, string>("redirect_uri","http://localhost:4200/callback/")
+            };
+            HttpContent content = new FormUrlEncodedContent(body);
+            HttpResponseMessage resp = await client.PostAsync("https://accounts.spotify.com/api/token", content);
+            string msg = await resp.Content.ReadAsStringAsync();
+            Token token = JsonConvert.DeserializeObject<Token>(msg);
+
+            if (token.HasError())
+            {
+                return BadRequest();
+            }
+
+            SpotifyWebAPI api = new SpotifyWebAPI
+            {
+                AccessToken = token.AccessToken,
+                TokenType = "Bearer"
+            };
+
+            var profile = api.GetPrivateProfile();
+            string email;
+            if (profile.Email != null)
+            {
+                email = profile.Email;
+            }else
+            {
+                email = profile.Id + "@musicqeary.com";
+            }
+
+
+            var user = new ApplicationUser()
+            {
+                UserName = profile.DisplayName,
+                Email = email,
+                SpotifyAuthToken = token.AccessToken,
+                SpotifyRefreshToken = token.RefreshToken,
+                SpotifyUserId = profile.Id,
+                TokenExpiration = DateTime.Now.AddHours(1)
+            };
+
+            IdentityResult result = await UserManager.CreateAsync(user, password);
+            if (!result.Succeeded)
+            {
+                return GetErrorResult(result);
+            }
+                return Ok();
         }
 
         // GET api/Account/ExternalLogins?returnUrl=%2F&generateState=true
@@ -381,6 +484,69 @@ namespace GoodQuestion.WebAPI.Controllers
             return Ok();
         }
 
+        public async Task<string> RefreshToken(string refreshToken)
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Authorization", "Basic ZTljMzlkNWZmNTEwNDcwOGI4NDRiZTk4ZTFlZjEwOGM6NWJjMWRjNTZmZGMwNGE3ZDk4Njg2MTUxMWYwYWJkYWY=");
+            List<KeyValuePair<string, string>> body = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("grant_type","refresh_token"),
+                new KeyValuePair<string, string>("refresh_token", refreshToken)
+            };
+            HttpContent content = new FormUrlEncodedContent(body);
+            HttpResponseMessage resp = await client.PostAsync("https://accounts.spotify.com/api/token", content);
+            string msg = await resp.Content.ReadAsStringAsync();
+            Token token = JsonConvert.DeserializeObject<Token>(msg);
+            if (token.HasError())
+            {
+                return msg;
+            }
+            else return token.AccessToken;
+        }
+
+        [Authorize(Roles ="Admin")]
+        [Route("BigWipe")]
+        public IHttpActionResult BigWipe()
+        {
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            SongServices songService = new SongServices(userId);
+            songService.DeleteTable();
+            PlaylistServices playlistServices = new PlaylistServices(userId);
+            playlistServices.DeleteTable();
+            using (var ctx = new ApplicationDbContext())
+            {
+                ctx.Database.ExecuteSqlCommand("UPDATE ApplicationUser SET HasPlaylists = 0");
+                ctx.SaveChanges();
+            }
+            return Ok();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [Route("BiggestWipe")]
+        public IHttpActionResult BiggestWipe()
+        {
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            SongServices songService = new SongServices(userId);
+            songService.DeleteTable();
+            PlaylistServices playlistServices = new PlaylistServices(userId);
+            playlistServices.DeleteTable();
+            using (var ctx = new ApplicationDbContext())
+            {
+                ctx.Database.ExecuteSqlCommand("UPDATE ApplicationUser SET HasPlaylists = 0");
+
+                var entity = ctx
+                    .Users
+                    .Where(e => e.Id.ToString() != "e266462d-910a-46f2-bc21-ad55791ce1a7");
+
+                foreach(var user in entity)
+                {
+                    ctx.Users.Remove(user);
+                }
+                ctx.SaveChanges();
+            }
+            return Ok();
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && _userManager != null)
@@ -433,6 +599,7 @@ namespace GoodQuestion.WebAPI.Controllers
             public string LoginProvider { get; set; }
             public string ProviderKey { get; set; }
             public string UserName { get; set; }
+            public string ExternalAccessToken { get; set; }
 
             public IList<Claim> GetClaims()
             {
@@ -471,7 +638,8 @@ namespace GoodQuestion.WebAPI.Controllers
                 {
                     LoginProvider = providerKeyClaim.Issuer,
                     ProviderKey = providerKeyClaim.Value,
-                    UserName = identity.FindFirstValue(ClaimTypes.Name)
+                    UserName = identity.FindFirstValue(ClaimTypes.Name),
+                    ExternalAccessToken = identity.FindFirstValue("ExternalAccessToken"),
                 };
             }
         }

@@ -1,4 +1,6 @@
-﻿using GoodQuestion.Services;
+﻿using GoodQuestion.Data;
+using GoodQuestion.Services;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,9 +64,36 @@ namespace GoodQuestion.WebAPI.Controllers
             return Ok();
         }
 
+        [Route("UserSongs")]
+        public IHttpActionResult GetUserSongs()
+        {
+            var svc = CreateSongServices();
+            svc.GetAllUserSongs();
+            return Ok();
+        }
+
         private SongServices CreateSongServices()
         {
-            var songService = new SongServices();
+            var userId = Guid.Parse(User.Identity.GetUserId());
+
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity =
+                    ctx
+                    .Users
+                    .Where(u => u.Id == userId.ToString())
+                    .Single();
+
+                if (entity.TokenExpiration < DateTime.Now)
+                {
+                    var accountController = new AccountController();
+                    entity.SpotifyAuthToken = accountController.RefreshToken(entity.SpotifyRefreshToken).ToString();
+                    entity.TokenExpiration = DateTime.Now.AddHours(1);
+                }
+            }
+            var songService = new SongServices(userId);
+            songService.SetToken();
+
             return songService;
         }
 

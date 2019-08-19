@@ -59,6 +59,13 @@ namespace GoodQuestion.WebAPI.Models
     public class RegisterExternalBindingModel
     {
         [Required]
+        [Display(Name = "Username")]
+        public string UserName { get; set; }
+        [Required]
+        public string Provider { get; set; }
+        [Required]
+        public string ExternalAccessToken { get; set; }
+        [Required]
         [Display(Name = "Email")]
         public string Email { get; set; }
     }

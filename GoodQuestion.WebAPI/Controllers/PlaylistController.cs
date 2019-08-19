@@ -1,4 +1,5 @@
-﻿using GoodQuestion.Services;
+﻿using GoodQuestion.Data;
+using GoodQuestion.Services;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
@@ -45,11 +46,11 @@ namespace GoodQuestion.WebAPI.Controllers
         }
 
         // GET api/Playlist/GetAllUserPlaylists
-        [Route("{spotifyId}")]
-        public IHttpActionResult GetAllUserPlaylistsSpotify(string spotifyId)
+        [Route("Spotify")]
+        public IHttpActionResult GetAllUserPlaylistsSpotify()
         {
             var svc = CreatePlaylistServices();
-            var playlists = svc.GetAllUserPlaylistsSpotify(spotifyId);
+            var playlists = svc.GetAllUserPlaylistsSpotify();
 
             return Ok(playlists);
         }
@@ -77,7 +78,25 @@ namespace GoodQuestion.WebAPI.Controllers
         private PlaylistServices CreatePlaylistServices()
         {
             var userId = Guid.Parse(User.Identity.GetUserId());
+
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity =
+                    ctx
+                    .Users
+                    .Where(u => u.Id == userId.ToString())
+                    .Single();
+
+                if (entity.TokenExpiration < DateTime.Now)
+                {
+                    var accountController = new AccountController();
+                    entity.SpotifyAuthToken = accountController.RefreshToken(entity.SpotifyRefreshToken).ToString();
+                    entity.TokenExpiration = DateTime.Now.AddHours(1);
+                }
+            }
+
             var playlistServices = new PlaylistServices(userId);
+            playlistServices.SetToken();
             return playlistServices;
         }
     }

@@ -10,12 +10,31 @@ namespace GoodQuestion.Services
 {
     public class SongServices
     {
+        private readonly Guid _userId;
+
+        public SongServices(Guid userId)
+        {
+            _userId = userId;
+        }
+
         private SpotifyWebAPI _api = new SpotifyWebAPI
         {
-            AccessToken = "BQD4OS_DPbBHJEZFX2eSucuMA3XyoM7fLO9JxtC8ZtUpUbCVqvc_NkRZZDk89UJ1FzOPUxVt7hZVvuNlXWzaL_ikxH3ypdg_oME3FZzF7mLggtsMDK-SKEXuA_9xtK_wxA_F31aXnJmI8spyZqs5npB83dSOrj2GS37jRvswPrb3gXy9vka3cR8rX2GKsX6p3jKuX4LCqUHyUZ-zgstanR74h7MGLNlP5m_WONdzifBNh9qH9hixEdCiqrWotGlgS48022fe-Zr4egDM-uRYLbzV6584IQh5",
             TokenType = "Bearer"
         };
-        private string _accountId = "38vdur0tacvhr9wud418mvzqh";
+
+        public void SetToken()
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity =
+                    ctx
+                    .Users
+                    .Where(u => u.Id == _userId.ToString())
+                    .Single();
+
+                _api.AccessToken = entity.SpotifyAuthToken;
+            }
+        }
 
         public bool CheckIfSongExists(string songId)
         {
@@ -148,6 +167,17 @@ namespace GoodQuestion.Services
                         PlayerUrl = song.PlayerUrl,
                         DurationMs = song.DurationMs,
                         LastRefreshed = song.LastRefreshed,
+                        Danceability = song.Danceability,
+                        Energy = song.Energy,
+                        Key = song.Key,
+                        Loudness = song.Loudness,
+                        Mode = song.Mode,
+                        Speechiness = song.Speechiness,
+                        Acousticness = song.Acousticness,
+                        Instrumentalness = song.Instrumentalness,
+                        Liveness = song.Liveness,
+                        Valence = song.Valence,
+                        Tempo = song.Tempo
                     };
                     songIndex.Add(songItem);
                 }
@@ -163,6 +193,10 @@ namespace GoodQuestion.Services
             int loops = count / 100;
 
             int remainder = count % 100;
+            if(count == 100)
+            {
+                remainder = 100;
+            }
 
             if (count % 100 != 0)
             {
@@ -207,6 +241,22 @@ namespace GoodQuestion.Services
                     songDict[song.Id].Valence = song.Valence;
                     songDict[song.Id].Tempo = song.Tempo;
                     songDict[song.Id].HasAudioFeatures = true;
+                }
+            }
+        }
+
+        public void GetAllUserSongs()
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var query =
+                    ctx
+                    .Users
+                    .Where(u => u.Id == _userId.ToString())
+                    .Single();
+                foreach (var playlist in query.Playlists)
+                {
+                    GetSongsInPlaylist(playlist.PlaylistId);
                 }
             }
         }
@@ -291,11 +341,21 @@ namespace GoodQuestion.Services
                 //Add playlist to all songs, add new songs to list of new songs
                 foreach (var track in songs)
                 {
-
-                    track.Playlists.Add(query);
                     if (!CheckIfSongExists(track.SongId))
                     {
                         newSongs.Add(track);
+                        track.Playlists.Add(query);
+                    }
+                    else
+                    {
+                        var querySong =
+                            db
+                            .Songs
+                            .Where(s => s.SongId == track.SongId)
+                            .Single();
+
+
+                        querySong.Playlists.Add(query);
                     }
                 }
 
@@ -407,6 +467,16 @@ namespace GoodQuestion.Services
                     return false;
                 }
             }
+        }
+
+        public bool DeleteTable()
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                ctx.Database.ExecuteSqlCommand("DELETE FROM [Song]");
+                ctx.SaveChanges();
+            }
+            return true;
         }
     }
 }
