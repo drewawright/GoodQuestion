@@ -67,11 +67,19 @@ namespace GoodQuestion.WebAPI.Controllers
         {
             ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
 
+            var role = "";
+
+            if (User.IsInRole("Admin"))
+            {
+               role = "Admin";
+            }
+
             return new UserInfoViewModel
             {
                 UserName = User.Identity.GetUserName(),
                 HasRegistered = externalLogin == null,
-                LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
+                LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null,
+                Role = role
             };
         }
 

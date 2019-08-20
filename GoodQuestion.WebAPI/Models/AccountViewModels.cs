@@ -41,6 +41,7 @@ namespace GoodQuestion.WebAPI.Models
         public string LoginProvider { get; set; }
 
         public string SpotifyUserId { get; set; }
+        public object Role { get; internal set; }
     }
 
     public class UserLoginInfoViewModel
