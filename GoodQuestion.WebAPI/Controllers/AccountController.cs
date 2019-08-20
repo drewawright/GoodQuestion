@@ -318,7 +318,7 @@ namespace GoodQuestion.WebAPI.Controllers
                 Authentication.SignIn(identity);
             }
 
-            redirectUri = string.Format("https://accounts.spotify.com/authorize?client_id={0}&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Fcallback%2F&scope={1}%20{2}%20{3}%20{4}&response_type=code&state=44347",
+            redirectUri = string.Format("https://accounts.spotify.com/authorize?client_id={0}&redirect_uri=https%3A%2F%2Ftc-musicqeary.herokuapp.com%2Fcallback%2F&scope={1}%20{2}%20{3}%20{4}&response_type=code&state=44347",
                 Startup.spotifyAuthOptions.ClientId,
                 Startup.spotifyAuthOptions.Scope[0],
                 Startup.spotifyAuthOptions.Scope[1],
@@ -347,7 +347,7 @@ namespace GoodQuestion.WebAPI.Controllers
             {
                 new KeyValuePair<string, string>("grant_type","authorization_code"),
                 new KeyValuePair<string, string>("code", code),
-                new KeyValuePair<string, string>("redirect_uri","http://tc-musicqeary.herokuapp.com/callback/")
+                new KeyValuePair<string, string>("redirect_uri","https://tc-musicqeary.herokuapp.com/callback/")
             };
             HttpContent content = new FormUrlEncodedContent(body);
             HttpResponseMessage resp = await client.PostAsync("https://accounts.spotify.com/api/token", content);
