@@ -317,8 +317,6 @@ namespace GoodQuestion.Services
                         Playlists = new List<Playlist>()
                     };
 
-                    // GetSongAudioFeatures(song);
-
                     if (track.Track.Album.Images.Count != 0)
                     {
                         song.ImageUrl = track.Track.Album.Images[0].Url;
@@ -377,6 +375,67 @@ namespace GoodQuestion.Services
                 }
                 else return false;
             }
+        }
+
+        public bool RefreshAllUserSongsArtwork()
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var query =
+                    ctx
+                    .Users
+                    .Where(u => u.Id == _userId.ToString())
+                    .Single();
+
+                //var allSongs = new List<Song>();
+                var allSongs = new Dictionary<string, Song>();
+
+                foreach (var playlist in query.Playlists)
+                {
+                    foreach(var song in playlist.Songs)
+                    {
+                        if(song.LastRefreshed < DateTime.Now.AddHours(1))
+                        {
+                            allSongs[song.SongId] = song;
+                        }
+                    }
+                }
+
+                var songList = allSongs.Keys.ToList();
+
+                var count = allSongs.Count;
+                int remainder = count % 50;
+                if (count > 50)
+                {
+                    var loops = count / 50;
+
+                    for (int i = 1; i < loops; i++)
+                    {
+                        var offset = i * 50;
+                        var additionalTracks = new SeveralTracks();
+                        if (i == loops)
+                        {
+                            additionalTracks = _api.GetSeveralTracks(songList.GetRange(offset, remainder), "");
+                        }
+                        else
+                        {
+                            additionalTracks = _api.GetSeveralTracks(songList.GetRange(offset, 50), "");
+                        }
+                        
+
+                        foreach (var track in additionalTracks.Tracks)
+                        {
+                            if (track.Album.Images.Count != 0)
+                            {
+                                allSongs[track.Id].ImageUrl = track.Album.Images[0].Url;
+                            }
+                            allSongs[track.Id].LastRefreshed = DateTime.Now;
+                        }
+                    }
+                }
+                ctx.SaveChanges();
+            }
+            return true;
         }
 
         public bool RefreshPlaylistSongsArtwork(string playlistId)

@@ -140,7 +140,7 @@ namespace GoodQuestion.Services
                 };
                 userPlaylists.Add(userPlaylist);
             }
-            //var newPlaylists = new List<Playlist>();
+
             var changeCount = 0;
             using (var ctx = new ApplicationDbContext())
             {
@@ -156,7 +156,6 @@ namespace GoodQuestion.Services
                         .Playlists
                         .Single(e => e.PlaylistId == playlist.PlaylistId);
 
-                        //playlistQuery = playlist;
                         changeCount++;
                         if (!userQuery.Playlists.Contains(playlistQuery))
                         {
@@ -300,80 +299,6 @@ namespace GoodQuestion.Services
                 return actual == changeCount;
             }
         }
-
-        //public bool GetUserAudioFeatures()
-        //{
-        //    using (var ctx = new ApplicationDbContext())
-        //    {
-        //        var entity =
-        //            ctx
-        //                .Users
-        //                .Where(u => u.Id == _userId.ToString())
-        //                .Single();
-
-        //        /*                var playlists =
-        //                            ctx
-        //                                .Users
-        //                                .Where(u => u.Id.ToString() == entity.Id)
-        //                                .Single();*/
-
-        //        float count = 0;
-        //        float danceability = 0;
-        //        float energy = 0;
-        //        float loudness = 0;
-        //        float speechiness = 0;
-        //        float acousticness = 0;
-        //        float instrumentalness = 0;
-        //        float liveness = 0;
-        //        float valence = 0;
-        //        float tempo = 0;
-        //        var key = new List<int>();
-        //        var mode = new List<int>();
-        //        int duration_ms = 0;
-
-        //        foreach (var playlist in entity.Playlists)
-        //        {
-        //            danceability += playlist.Danceability;
-        //            energy += playlist.Energy;
-        //            loudness += playlist.Loudness;
-        //            speechiness += playlist.Speechiness;
-        //            acousticness += playlist.Acousticness;
-        //            instrumentalness += playlist.Instrumentalness;
-        //            liveness += playlist.Liveness;
-        //            valence += playlist.Valence;
-        //            tempo += playlist.Tempo;
-        //            key.Add(playlist.Key);
-        //            mode.Add(playlist.Mode);
-        //            duration_ms += playlist.Duration_ms;
-        //            count++;
-        //        }
-
-        //        var keyMode = key
-        //            .GroupBy(n => n)
-        //            .OrderByDescending(g => g.Count())
-        //            .Select(g => g.Key).FirstOrDefault();
-
-        //        var modeMode = mode
-        //            .GroupBy(n => n)
-        //            .OrderByDescending(g => g.Count())
-        //            .Select(g => g.Key).FirstOrDefault();
-
-        //        entity.Danceability = danceability / count;
-        //        entity.Energy = energy / count;
-        //        entity.Loudness = loudness / count;
-        //        entity.Speechiness = speechiness / count;
-        //        entity.Acousticness = acousticness / count;
-        //        entity.Instrumentalness = instrumentalness / count;
-        //        entity.Liveness = liveness / count;
-        //        entity.Valence = valence / count;
-        //        entity.Tempo = tempo / count;
-        //        entity.Key = keyMode;
-        //        entity.Mode = modeMode;
-        //        entity.Duration_ms = duration_ms;
-
-        //        return ctx.SaveChanges() == 1;
-        //    }
-        //}
 
         public bool UpdateDbPlaylist(string playlistId)
         {
