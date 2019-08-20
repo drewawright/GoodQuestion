@@ -86,15 +86,6 @@ namespace GoodQuestion.WebAPI.Controllers
                     .Users
                     .Where(u => u.Id == userId.ToString())
                     .Single();
-
-/*                if (entity.TokenExpiration < DateTime.Now)
-                {
-                    var accountController = new AccountController();
-                    entity.SpotifyAuthToken = accountController.RefreshToken(entity.SpotifyRefreshToken).ToString();
-                    entity.TokenExpiration = DateTime.Now.AddHours(1);
-                    ctx.SaveChanges();
-                }*/
-                
             }
 
             var playlistServices = new PlaylistServices(userId);
