@@ -95,9 +95,13 @@ namespace GoodQuestion.Services
                 foreach (var playlist in entity.Playlists)
                 {
                     var apiPlaylist = _api.GetPlaylist(playlist.PlaylistId);
-                    playlist.ImageUrl = apiPlaylist.Images[0].Url;
                     playlist.LastRefreshed = DateTime.Now;
                     changeCount++;
+                    if (apiPlaylist.Images.Count != 0)
+                    {
+                        playlist.ImageUrl = apiPlaylist.Images[0].Url;
+                    }
+
                 }
 
                 return ctx.SaveChanges() == changeCount;
