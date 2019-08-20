@@ -25,7 +25,8 @@ namespace GoodQuestion.WebAPI.Controllers
         }
 
         //PUT api/Playlist
-        [HttpPut]
+        [HttpGet]
+        [Route("RefreshUserPlaylistsArtwork")]
         public IHttpActionResult RefreshUserPlaylistsArtwork()
         {
             var svc = CreatePlaylistServices();
