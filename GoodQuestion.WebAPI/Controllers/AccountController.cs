@@ -108,6 +108,7 @@ namespace GoodQuestion.WebAPI.Controllers
         }
 
         // POST api/Account/Logout
+        [HttpGet]
         [Route("Logout")]
         public IHttpActionResult Logout()
         {
@@ -184,7 +185,7 @@ namespace GoodQuestion.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            IdentityResult result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
+            IdentityResult result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.Password);
 
             if (!result.Succeeded)
             {
@@ -317,7 +318,7 @@ namespace GoodQuestion.WebAPI.Controllers
                 Authentication.SignIn(identity);
             }
 
-            redirectUri = string.Format("https://accounts.spotify.com/authorize?client_id={0}&redirect_uri=https%3A%2F%2Ftc-musicqeary.herokuapp.com%2Fcallback%2F&scope={1}%20{2}%20{3}%20{4}&response_type=code&state=44347",
+            redirectUri = string.Format("https://accounts.spotify.com/authorize?client_id={0}&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Fcallback%2F&scope={1}%20{2}%20{3}%20{4}&response_type=code&state=44347",
                 Startup.spotifyAuthOptions.ClientId,
                 Startup.spotifyAuthOptions.Scope[0],
                 Startup.spotifyAuthOptions.Scope[1],
@@ -333,15 +334,20 @@ namespace GoodQuestion.WebAPI.Controllers
 
         [AllowAnonymous]
         [Route("CompleteRegister")]
-        public async Task<IHttpActionResult> CompleteRegister(string code, string password)
+        public async Task<IHttpActionResult> CompleteRegister(string code, SetPasswordBindingModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var client = new HttpClient();
             client.DefaultRequestHeaders.Add("Authorization", "Basic ZTljMzlkNWZmNTEwNDcwOGI4NDRiZTk4ZTFlZjEwOGM6NWJjMWRjNTZmZGMwNGE3ZDk4Njg2MTUxMWYwYWJkYWY=");
             List<KeyValuePair<string, string>> body = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("grant_type","authorization_code"),
                 new KeyValuePair<string, string>("code", code),
-                new KeyValuePair<string, string>("redirect_uri","https://tc-musicqeary.herokuapp.com/callback/")
+                new KeyValuePair<string, string>("redirect_uri","http://tc-musicqeary.herokuapp.com/callback/")
             };
             HttpContent content = new FormUrlEncodedContent(body);
             HttpResponseMessage resp = await client.PostAsync("https://accounts.spotify.com/api/token", content);
@@ -380,7 +386,7 @@ namespace GoodQuestion.WebAPI.Controllers
                 TokenExpiration = DateTime.Now.AddHours(1)
             };
 
-            IdentityResult result = await UserManager.CreateAsync(user, password);
+            IdentityResult result = await UserManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
                 return GetErrorResult(result);
@@ -484,27 +490,50 @@ namespace GoodQuestion.WebAPI.Controllers
             return Ok();
         }
 
-        public async Task<string> RefreshToken(string refreshToken)
+        // POST api/Account/RefreshToken
+        
+        [HttpGet]
+        [Route("RefreshToken")]
+        public async Task<IHttpActionResult> RefreshToken()
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", "Basic ZTljMzlkNWZmNTEwNDcwOGI4NDRiZTk4ZTFlZjEwOGM6NWJjMWRjNTZmZGMwNGE3ZDk4Njg2MTUxMWYwYWJkYWY=");
-            List<KeyValuePair<string, string>> body = new List<KeyValuePair<string, string>>
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            using (var ctx = new ApplicationDbContext())
             {
-                new KeyValuePair<string, string>("grant_type","refresh_token"),
-                new KeyValuePair<string, string>("refresh_token", refreshToken)
-            };
-            HttpContent content = new FormUrlEncodedContent(body);
-            HttpResponseMessage resp = await client.PostAsync("https://accounts.spotify.com/api/token", content);
-            string msg = await resp.Content.ReadAsStringAsync();
-            Token token = JsonConvert.DeserializeObject<Token>(msg);
-            if (token.HasError())
-            {
-                return msg;
+                var entity =
+                    ctx
+                    .Users
+                    .Where(u => u.Id == userId.ToString())
+                    .Single();
+
+                if (entity.TokenExpiration < DateTime.Now.AddMinutes(10))
+                {
+
+                    string refreshToken = entity.SpotifyRefreshToken;
+
+                    var client = new HttpClient();
+                    client.DefaultRequestHeaders.Add("Authorization", "Basic ZTljMzlkNWZmNTEwNDcwOGI4NDRiZTk4ZTFlZjEwOGM6NWJjMWRjNTZmZGMwNGE3ZDk4Njg2MTUxMWYwYWJkYWY=");
+                    List<KeyValuePair<string, string>> body = new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>("grant_type","refresh_token"),
+                        new KeyValuePair<string, string>("refresh_token", refreshToken)
+                    };
+
+
+                    HttpContent content = new FormUrlEncodedContent(body);
+                    HttpResponseMessage resp = await client.PostAsync("https://accounts.spotify.com/api/token", content);
+                    string msg = await resp.Content.ReadAsStringAsync();
+                    Token token = JsonConvert.DeserializeObject<Token>(msg);
+
+                    entity.SpotifyAuthToken = token.AccessToken;
+                    entity.TokenExpiration = DateTime.Now.AddHours(1);
+                    ctx.SaveChanges();
+                }
+                return Ok();
             }
-            else return token.AccessToken;
         }
 
         [Authorize(Roles ="Admin")]
+        [HttpGet]
         [Route("BigWipe")]
         public IHttpActionResult BigWipe()
         {
@@ -522,6 +551,7 @@ namespace GoodQuestion.WebAPI.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [HttpGet]
         [Route("BiggestWipe")]
         public IHttpActionResult BiggestWipe()
         {
