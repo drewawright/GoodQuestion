@@ -394,7 +394,7 @@ namespace GoodQuestion.Services
                 {
                     foreach(var song in playlist.Songs)
                     {
-                        if(song.LastRefreshed < DateTime.Now.AddHours(1))
+                        if( 23 < DateTime.Now.Subtract(song.LastRefreshed).TotalHours)
                         {
                             allSongs[song.SongId] = song;
                         }
