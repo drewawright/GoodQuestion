@@ -72,6 +72,15 @@ namespace GoodQuestion.WebAPI.Controllers
             return Ok();
         }
 
+        [Route("RefreshUserSongsArtwork")]
+        [HttpGet]
+        public IHttpActionResult RefreshAllUserSongsArtwork()
+        {
+            var svc = CreateSongServices();
+            svc.RefreshAllUserSongsArtwork();
+            return Ok();
+        }
+
         private SongServices CreateSongServices()
         {
             var userId = Guid.Parse(User.Identity.GetUserId());
@@ -83,14 +92,6 @@ namespace GoodQuestion.WebAPI.Controllers
                     .Users
                     .Where(u => u.Id == userId.ToString())
                     .Single();
-
-/*                if (entity.TokenExpiration < DateTime.Now)
-                {
-                    var accountController = new AccountController();
-                    entity.SpotifyAuthToken = accountController.RefreshToken(entity.SpotifyRefreshToken).ToString();
-                    entity.TokenExpiration = DateTime.Now.AddHours(1);
-                    ctx.SaveChanges();
-                }*/
             }
             var songService = new SongServices(userId);
             songService.SetToken();
