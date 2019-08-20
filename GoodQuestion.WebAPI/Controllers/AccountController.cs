@@ -347,7 +347,7 @@ namespace GoodQuestion.WebAPI.Controllers
             {
                 new KeyValuePair<string, string>("grant_type","authorization_code"),
                 new KeyValuePair<string, string>("code", code),
-                new KeyValuePair<string, string>("redirect_uri","http://tc-musicqeary.herokuapp.com/callback/")
+                new KeyValuePair<string, string>("redirect_uri","https://tc-musicqeary.herokuapp.com/callback/")
             };
             HttpContent content = new FormUrlEncodedContent(body);
             HttpResponseMessage resp = await client.PostAsync("https://accounts.spotify.com/api/token", content);
