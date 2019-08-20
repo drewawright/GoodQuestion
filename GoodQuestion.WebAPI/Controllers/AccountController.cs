@@ -318,7 +318,7 @@ namespace GoodQuestion.WebAPI.Controllers
                 Authentication.SignIn(identity);
             }
 
-            redirectUri = string.Format("https://accounts.spotify.com/authorize?client_id={0}&redirect_uri=https%3A%2F%2Ftc-musicqeary.herokuapp.com%2Fcallback%2Fscope={1}%20{2}%20{3}%20{4}&response_type=code&state=44347",
+            redirectUri = string.Format("https://accounts.spotify.com/authorize?client_id={0}&redirect_uri=https%3A%2F%2Ftc-musicqeary.herokuapp.com%2Fcallback%2F&scope={1}%20{2}%20{3}%20{4}&response_type=code&state=44347",
                 Startup.spotifyAuthOptions.ClientId,
                 Startup.spotifyAuthOptions.Scope[0],
                 Startup.spotifyAuthOptions.Scope[1],
